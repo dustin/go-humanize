@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Seconds-based time units
 const (
 	Minute = 60
 	Hour   = 60 * Minute
@@ -14,7 +15,8 @@ const (
 	Year   = 12 * Month
 )
 
-func Humanize(then time.Time) string {
+// Humanize the time.
+func HumanTime(then time.Time) string {
 	now := time.Now()
 
 	lbl := "ago"
