@@ -5,6 +5,8 @@ import (
 	"math"
 )
 
+// IEC Sizes.
+// kibis of bits
 const (
 	Byte   = 1
 	KiByte = Byte * 1024
@@ -15,6 +17,7 @@ const (
 	EiByte = PiByte * 1024
 )
 
+// SI Sizes.
 const (
 	IByte = 1
 	KByte = IByte * 1000
@@ -25,8 +28,10 @@ const (
 	EByte = PByte * 1000
 )
 
+// Type for SI sizes.
 type Bytes uint64
 
+// Type for IEC sizes.
 type IBytes uint64
 
 func logn(n, b float64) float64 {
@@ -43,11 +48,15 @@ func humanateBytes(s uint64, base float64, sizes []string) string {
 
 }
 
+// String up an SI size.
+// Bytes(82854982) -> 83MB
 func (s Bytes) String() string {
 	sizes := []string{"B", "KB", "MB", "GB", "TB", "PB", "EB"}
 	return humanateBytes(uint64(s), 1000, sizes)
 }
 
+// String an IEC size.
+// IBytes(82854982) -> 79MiB
 func (s IBytes) String() string {
 	sizes := []string{"B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"}
 	return humanateBytes(uint64(s), 1024, sizes)
