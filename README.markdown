@@ -12,7 +12,7 @@ strings like, `83MB` or `79MiB` (whichever you prefer).
 
 Example:
 
-    fmt.Printf("That file is %s.", humanize.Bytes(82854982).String())
+    fmt.Printf("That file is %s.", humanize.Bytes(82854982))
 
 ## Times
 
@@ -21,7 +21,7 @@ For example, `12 seconds ago` or `3 days from now`.
 
 Example:
 
-    fmt.Printf("This was touched %s", humanize.HumanTime(someTimeInstance))
+    fmt.Printf("This was touched %s", humanize.Time(someTimeInstance))
 
 Thanks to Kyle Lemons for the time implementation from an IRC
 conversation one day.  It's pretty neat.

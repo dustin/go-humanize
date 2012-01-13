@@ -34,35 +34,35 @@ func TestPast(t *testing.T) {
 	i := 0
 	now := time.Now().Unix()
 
-	checkTime(t, expected[i], HumanTime(time.Unix(now, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now-12, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now-12, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now-30, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now-30, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now-45, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now-45, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now-15*Minute, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now-15*Minute, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now-2*Hour, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now-2*Hour, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now-21*Hour, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now-21*Hour, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now-26*Hour, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now-26*Hour, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now-49*Hour, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now-49*Hour, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now-3*Day, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now-3*Day, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now-7*Day, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now-7*Day, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now-12*Day, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now-12*Day, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now-15*Day, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now-15*Day, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now-39*Day, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now-39*Day, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now-365*Day, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now-365*Day, 0)))
 }
 
 func TestFuture(t *testing.T) {
@@ -88,33 +88,33 @@ func TestFuture(t *testing.T) {
 	i := 0
 	now := time.Now().Unix()
 
-	checkTime(t, expected[i], HumanTime(time.Unix(now, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now+12, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now+12, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now+30, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now+30, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now+45, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now+45, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now+15*Minute, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now+15*Minute, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now+2*Hour, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now+2*Hour, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now+21*Hour, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now+21*Hour, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now+26*Hour, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now+26*Hour, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now+49*Hour, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now+49*Hour, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now+3*Day, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now+3*Day, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now+7*Day, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now+7*Day, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now+12*Day, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now+12*Day, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now+15*Day, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now+15*Day, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now+39*Day, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now+39*Day, 0)))
 	i++
-	checkTime(t, expected[i], HumanTime(time.Unix(now+365*Day, 0)))
+	checkTime(t, expected[i], Time(time.Unix(now+365*Day, 0)))
 }

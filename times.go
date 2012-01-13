@@ -16,7 +16,7 @@ const (
 )
 
 // Humanize the time.
-func HumanTime(then time.Time) string {
+func Time(then time.Time) string {
 	now := time.Now()
 
 	lbl := "ago"
