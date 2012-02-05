@@ -15,6 +15,7 @@ func TestPast(t *testing.T) {
 
 	expected := []string{
 		"now",
+		"1 second ago",
 		"12 seconds ago",
 		"30 seconds ago",
 		"45 seconds ago",
@@ -35,6 +36,8 @@ func TestPast(t *testing.T) {
 	now := time.Now().Unix()
 
 	checkTime(t, expected[i], Time(time.Unix(now, 0)))
+	i++
+	checkTime(t, expected[i], Time(time.Unix(now-1, 0)))
 	i++
 	checkTime(t, expected[i], Time(time.Unix(now-12, 0)))
 	i++
@@ -69,6 +72,7 @@ func TestFuture(t *testing.T) {
 
 	expected := []string{
 		"now",
+		"1 second from now",
 		"12 seconds from now",
 		"30 seconds from now",
 		"45 seconds from now",
@@ -89,6 +93,8 @@ func TestFuture(t *testing.T) {
 	now := time.Now().Unix()
 
 	checkTime(t, expected[i], Time(time.Unix(now, 0)))
+	i++
+	checkTime(t, expected[i], Time(time.Unix(now+1, 0)))
 	i++
 	checkTime(t, expected[i], Time(time.Unix(now+12, 0)))
 	i++

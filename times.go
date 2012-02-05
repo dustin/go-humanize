@@ -29,7 +29,9 @@ func Time(then time.Time) string {
 	switch {
 
 	case diff <= 0:
-		return fmt.Sprintf("now")
+		return "now"
+	case diff <= 2:
+		return fmt.Sprintf("1 second %s", lbl)
 	case diff < 1*Minute:
 		return fmt.Sprintf("%d seconds %s", diff, lbl)
 
