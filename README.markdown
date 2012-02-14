@@ -2,7 +2,7 @@
 
 Just a few functions for helping humanize times and sizes.
 
-`goinstall` it as `github.com/dustin/go-humanize`, import it as
+`go get` it as `github.com/dustin/go-humanize`, import it as
 `"github.com/dustin/go-humanize"`, use it as `humanize`
 
 ## Sizes
