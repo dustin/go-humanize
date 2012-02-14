@@ -25,3 +25,21 @@ Example:
 
 Thanks to Kyle Lemons for the time implementation from an IRC
 conversation one day.  It's pretty neat.
+
+## Ordinals
+
+From a [mailing list discussion][odisc] where a user wanted to be able
+to label ordinals.
+
+    0 -> 0th
+    1 -> 1st
+    2 -> 2nd
+    3 -> 3rd
+    4 -> 4th
+    [...]
+
+Example:
+
+    fmt.Printf("You're my %s best friend.", humanize.Ordinal(193))
+
+[odisc]: https://groups.google.com/d/topic/golang-nuts/l8NhI74jl-4/discussion
