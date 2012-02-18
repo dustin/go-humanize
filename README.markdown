@@ -42,4 +42,18 @@ Example:
 
     fmt.Printf("You're my %s best friend.", humanize.Ordinal(193))
 
+## Commas
+
+Want to shove commas into numbers?  Be my guest.
+
+    0 -> 0
+    100 -> 100
+    1000 -> 1,000
+    1000000000 -> 1,000,000,000
+    -100000 -> -100,000
+
+Example:
+
+    fmt.Printf("You owe $%s.\n", humanize.Comma(6582491))
+
 [odisc]: https://groups.google.com/d/topic/golang-nuts/l8NhI74jl-4/discussion
