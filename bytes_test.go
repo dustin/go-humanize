@@ -85,3 +85,11 @@ func TestIE(t *testing.T) {
 	// Overflows.
 	// assert(t, "bytes(1EB - 1P)", IBytes((KIByte*EIByte)-PiByte), "1023EB")
 }
+
+func TestIHalf(t *testing.T) {
+	assert(t, "bytes(5.5GiB)", IBytes(5.5*GiByte), "5.5GiB")
+}
+
+func TestHalf(t *testing.T) {
+	assert(t, "bytes(5.5GB)", Bytes(5.5*GByte), "5.5GB")
+}
