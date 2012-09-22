@@ -3,6 +3,9 @@ package humanize
 import (
 	"fmt"
 	"math"
+	"strconv"
+	"strings"
+	"unicode"
 )
 
 // IEC Sizes.
@@ -27,6 +30,36 @@ const (
 	PByte = TByte * 1000
 	EByte = PByte * 1000
 )
+
+var bytesSizeTable = map[string]uint64{
+	"b":   Byte,
+	"kib": KiByte,
+	"kb":  KByte,
+	"mib": MiByte,
+	"mb":  MByte,
+	"gib": GiByte,
+	"gb":  GByte,
+	"tib": TiByte,
+	"tb":  TByte,
+	"pib": PiByte,
+	"pb":  PByte,
+	"eib": EiByte,
+	"eb":  EByte,
+	// Without suffix
+	"":   Byte,
+	"ki": KiByte,
+	"k":  KByte,
+	"mi": MiByte,
+	"m":  MByte,
+	"gi": GiByte,
+	"g":  GByte,
+	"ti": TiByte,
+	"t":  TByte,
+	"pi": PiByte,
+	"p":  PByte,
+	"ei": EiByte,
+	"e":  EByte,
+}
 
 func logn(n, b float64) float64 {
 	return math.Log(n) / math.Log(b)
@@ -60,4 +93,30 @@ func Bytes(s uint64) string {
 func IBytes(s uint64) string {
 	sizes := []string{"B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"}
 	return humanateBytes(uint64(s), 1024, sizes)
+}
+
+// Parse a string representation of bytes into the number of bytes it
+// represents
+// ParseBytes("42MB") -> 42000000, nil
+// ParseBytes("42mib") -> 44040192, nil
+func ParseBytes(s string) (uint64, error) {
+	lastDigit := 0
+	for _, r := range s {
+		if !(unicode.IsDigit(r) || r == '.') {
+			break
+		}
+		lastDigit++
+	}
+
+	f, err := strconv.ParseFloat(s[:lastDigit], 64)
+	if err != nil {
+		return 0, err
+	}
+
+	extra := strings.ToLower(strings.TrimSpace(s[lastDigit:]))
+	if m, ok := bytesSizeTable[extra]; ok {
+		return uint64(f * float64(m)), nil
+	}
+
+	return 0, fmt.Errorf("Unhandled size name: %v", extra)
 }
