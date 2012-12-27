@@ -7,7 +7,6 @@ import (
 func assert(t *testing.T, name string, got interface{}, expected interface{}) {
 	if got != expected {
 		t.Errorf("Expected %#v for %s, got %#v", expected, name, got)
-		t.Fail()
 	}
 }
 
@@ -56,12 +55,10 @@ func TestByteParsing(t *testing.T) {
 		got, err := ParseBytes(p.in)
 		if err != nil {
 			t.Errorf("Couldn't parse %v: %v", p.in, err)
-			t.Fail()
 		}
 		if got != p.exp {
 			t.Errorf("Expected %v for %v, got %v",
 				p.exp, p.in, got)
-			t.Fail()
 		}
 	}
 }
