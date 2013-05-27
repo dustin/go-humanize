@@ -19,7 +19,9 @@ func TestPast(t *testing.T) {
 		"12 seconds ago",
 		"30 seconds ago",
 		"45 seconds ago",
+		"1 minute ago",
 		"15 minutes ago",
+		"1 hour ago",
 		"2 hours ago",
 		"21 hours ago",
 		"1 day ago",
@@ -29,6 +31,7 @@ func TestPast(t *testing.T) {
 		"1 week ago",
 		"2 weeks ago",
 		"1 month ago",
+		"3 month ago",
 		"1 year ago",
 	}
 
@@ -45,7 +48,11 @@ func TestPast(t *testing.T) {
 	i++
 	checkTime(t, expected[i], Time(time.Unix(now-45, 0)))
 	i++
+	checkTime(t, expected[i], Time(time.Unix(now-63, 0)))
+	i++
 	checkTime(t, expected[i], Time(time.Unix(now-15*Minute, 0)))
+	i++
+	checkTime(t, expected[i], Time(time.Unix(now-63*Minute, 0)))
 	i++
 	checkTime(t, expected[i], Time(time.Unix(now-2*Hour, 0)))
 	i++
@@ -64,6 +71,8 @@ func TestPast(t *testing.T) {
 	checkTime(t, expected[i], Time(time.Unix(now-15*Day, 0)))
 	i++
 	checkTime(t, expected[i], Time(time.Unix(now-39*Day, 0)))
+	i++
+	checkTime(t, expected[i], Time(time.Unix(now-99*Day, 0)))
 	i++
 	checkTime(t, expected[i], Time(time.Unix(now-365*Day, 0)))
 }
