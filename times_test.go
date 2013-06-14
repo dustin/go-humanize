@@ -31,7 +31,7 @@ func TestPast(t *testing.T) {
 		"1 week ago",
 		"2 weeks ago",
 		"1 month ago",
-		"3 month ago",
+		"3 months ago",
 		"1 year ago",
 	}
 
