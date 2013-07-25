@@ -5,7 +5,9 @@ import (
 	"strings"
 )
 
-// Place commas after every three orders of magnitude.
+// Comma produces a string form of the given number in base 10 with
+// commas after every three orders of magnitude.
+// e.g. Comma(834142) -> 834,142
 func Comma(v int64) string {
 	sign := ""
 	if v < 0 {

@@ -2,6 +2,8 @@ package humanize
 
 import "strconv"
 
+// Ordinal gives you the input number in a rank/ordinal format.
+// Ordinal(3) -> 3rd
 func Ordinal(x int) string {
 	suffix := "th"
 	switch x % 10 {

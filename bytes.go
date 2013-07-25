@@ -81,22 +81,22 @@ func humanateBytes(s uint64, base float64, sizes []string) string {
 
 }
 
-// String up an SI size.
+// Bytes produces a human readable representation of an SI size.
 // Bytes(82854982) -> 83MB
 func Bytes(s uint64) string {
 	sizes := []string{"B", "KB", "MB", "GB", "TB", "PB", "EB"}
 	return humanateBytes(uint64(s), 1000, sizes)
 }
 
-// String an IEC size.
+// IBytes produces a human readable representation of an IEC size.
 // IBytes(82854982) -> 79MiB
 func IBytes(s uint64) string {
 	sizes := []string{"B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"}
 	return humanateBytes(uint64(s), 1024, sizes)
 }
 
-// Parse a string representation of bytes into the number of bytes it
-// represents
+// ParseBytes parses a string representation of bytes into the number
+// of bytes it represents.
 // ParseBytes("42MB") -> 42000000, nil
 // ParseBytes("42mib") -> 44040192, nil
 func ParseBytes(s string) (uint64, error) {
