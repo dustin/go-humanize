@@ -13,6 +13,8 @@ func checkTime(t *testing.T, expected, got string) {
 
 func TestPast(t *testing.T) {
 
+	const longAgo = 37 * 365 * int64(time.Hour) * 24
+
 	expected := []string{
 		"now",
 		"1 second ago",
@@ -37,6 +39,8 @@ func TestPast(t *testing.T) {
 
 	i := 0
 	now := time.Now().Unix()
+
+	expected = append(expected, time.Unix(now-longAgo, 0).String())
 
 	checkTime(t, expected[i], Time(time.Unix(now, 0)))
 	i++
@@ -75,9 +79,13 @@ func TestPast(t *testing.T) {
 	checkTime(t, expected[i], Time(time.Unix(now-99*Day, 0)))
 	i++
 	checkTime(t, expected[i], Time(time.Unix(now-365*Day, 0)))
+	i++
+	checkTime(t, expected[i], Time(time.Unix(now-longAgo, 0)))
 }
 
 func TestFuture(t *testing.T) {
+
+	const awhileFromNow = 37 * 365 * int64(time.Hour) * 24
 
 	expected := []string{
 		"now",
@@ -100,6 +108,8 @@ func TestFuture(t *testing.T) {
 
 	i := 0
 	now := time.Now().Unix()
+
+	expected = append(expected, time.Unix(now+awhileFromNow, 0).String())
 
 	checkTime(t, expected[i], Time(time.Unix(now, 0)))
 	i++
@@ -132,4 +142,6 @@ func TestFuture(t *testing.T) {
 	checkTime(t, expected[i], Time(time.Unix(now+39*Day, 0)))
 	i++
 	checkTime(t, expected[i], Time(time.Unix(now+365*Day, 0)))
+	i++
+	checkTime(t, expected[i], Time(time.Unix(now+awhileFromNow, 0)))
 }
