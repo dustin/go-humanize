@@ -68,7 +68,10 @@ func TestByteErrors(t *testing.T) {
 	if err == nil {
 		t.Errorf("Expected error, got %v", got)
 	}
-	// TODO: Figure out how to induce failure in the float parser.
+	got, err = ParseBytes("")
+	if err == nil {
+		t.Errorf("Expected error parsing nothing")
+	}
 }
 
 func TestBytes(t *testing.T) {
