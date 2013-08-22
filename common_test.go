@@ -5,7 +5,7 @@ import (
 )
 
 type testList []struct {
-	name, exp, got string
+	name, got, exp string
 }
 
 func (tl testList) validate(t *testing.T) {
