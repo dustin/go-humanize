@@ -15,7 +15,7 @@ func Comma(v int64) string {
 		v = 0 - v
 	}
 
-	parts := []string{"", "", "", "", "", "", "", "", ""}
+	parts := []string{"", "", "", "", "", "", "", ""}
 	j := len(parts) - 1
 
 	for v > 999 {
