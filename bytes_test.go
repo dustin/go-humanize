@@ -43,6 +43,7 @@ func TestByteParsing(t *testing.T) {
 		// this.
 		{"12.5 EB", uint64(12.5 * float64(EByte))},
 		{"12.5 E", uint64(12.5 * float64(EByte))},
+		{"12.5 EiB", uint64(12.5 * float64(EiByte))},
 	}
 
 	for _, p := range tests {
@@ -65,6 +66,10 @@ func TestByteErrors(t *testing.T) {
 	got, err = ParseBytes("")
 	if err == nil {
 		t.Errorf("Expected error parsing nothing")
+	}
+	got, err = ParseBytes("16 EiB")
+	if err == nil {
+		t.Errorf("Expected error, got %v", got)
 	}
 }
 
