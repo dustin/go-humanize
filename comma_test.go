@@ -35,8 +35,13 @@ func TestCommas(t *testing.T) {
 
 func BenchmarkCommas(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Comma(1000000000)
 		Comma(1234567890)
+	}
+}
+
+func BenchmarkBigCommas(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		BigComma(big.NewInt(1234567890))
 	}
 }
 
