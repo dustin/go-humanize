@@ -45,7 +45,7 @@ func BigComma(b *big.Int) string {
 
 	athousand := big.NewInt(1000)
 	c := (&big.Int{}).Set(b)
-	_, m := oom(c, athousand, 2e10)
+	_, m := oom(c, athousand, -1)
 	parts := make([]string, m+1)
 	j := len(parts) - 1
 

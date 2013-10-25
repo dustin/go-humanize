@@ -79,7 +79,7 @@ func oom(n, b *big.Int, maxmag int) (float64, int) {
 	for n.Cmp(b) >= 0 {
 		n.DivMod(n, b, m)
 		mag++
-		if mag == maxmag {
+		if mag == maxmag && maxmag >= 0 {
 			break
 		}
 	}
