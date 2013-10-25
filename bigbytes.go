@@ -73,19 +73,6 @@ var bigBytesSizeTable = map[string]*big.Int{
 	"yi": BigYiByte,
 }
 
-func oom(n, b *big.Int, maxmag int) (float64, int) {
-	mag := 0
-	m := &big.Int{}
-	for n.Cmp(b) >= 0 {
-		n.DivMod(n, b, m)
-		mag++
-		if mag == maxmag && maxmag >= 0 {
-			break
-		}
-	}
-	return float64(n.Int64()) + (float64(m.Int64()) / float64(b.Int64())), mag
-}
-
 var ten = big.NewInt(10)
 
 func humanateBigBytes(s, base *big.Int, sizes []string) string {
@@ -93,7 +80,7 @@ func humanateBigBytes(s, base *big.Int, sizes []string) string {
 		return fmt.Sprintf("%dB", s)
 	}
 	c := (&big.Int{}).Set(s)
-	val, mag := oom(c, base, len(sizes)-1)
+	val, mag := oomm(c, base, len(sizes)-1)
 	suffix := sizes[mag]
 	f := "%.0f"
 	if val < 10 {
