@@ -117,10 +117,10 @@ func ParseBytes(s string) (uint64, error) {
 	if m, ok := bytesSizeTable[extra]; ok {
 		f *= float64(m)
 		if f >= math.MaxUint64 {
-			return 0, fmt.Errorf("Too large: %v", s)
+			return 0, fmt.Errorf("too large: %v", s)
 		}
 		return uint64(f), nil
 	}
 
-	return 0, fmt.Errorf("Unhandled size name: %v", extra)
+	return 0, fmt.Errorf("unhandled size name: %v", extra)
 }
