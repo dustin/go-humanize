@@ -56,4 +56,23 @@ Example:
 
     fmt.Printf("You owe $%s.\n", humanize.Comma(6582491))
 
+## Ftoa
+
+Nicer float64 formatter that removes trailing zeros.
+
+    fmt.Printf("%f", 2.24)                   // 2.240000
+    fmt.Printf("%s", humanize.Ftoa(2.24))    // 2.24
+    fmt.Printf("%f", 2.0)                    // 2.000000
+    fmt.Printf("%s", humanize.Ftoa(2.0))     // 2
+
+## SI notation
+
+Format numbers with [SI notation][sinotation].
+
+Example:
+
+    humanize.SI(0.00000000223, "M")    // 2.23nM
+
+
 [odisc]: https://groups.google.com/d/topic/golang-nuts/l8NhI74jl-4/discussion
+[sinotation]: http://en.wikipedia.org/wiki/Metric_prefix
