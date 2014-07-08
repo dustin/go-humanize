@@ -73,7 +73,6 @@ func Time(then time.Time) string {
 
 	if after {
 		return "a while from now"
-	} else {
-		return "long ago"
 	}
+	return "long ago"
 }
