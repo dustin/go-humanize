@@ -33,7 +33,7 @@ type siNumber struct {
 }
 
 // NewSI returns a {Value, Prefix} struct for further formatting
-func NewSI(input float64) siNumber {
+func newSI(input float64) siNumber {
 	if input == 0 {
 		return siNumber{0, ""}
 	}
@@ -58,6 +58,6 @@ func NewSI(input float64) siNumber {
 // e.g. SI(1000000, B) -> 1MB
 // e.g. SI(2.2345e-12, "F") -> 2.2345pF
 func SI(input float64, unit string) string {
-	si := NewSI(input)
+	si := newSI(input)
 	return fmt.Sprintf("%s%s%s", Ftoa(si.Value), si.Prefix, unit)
 }
