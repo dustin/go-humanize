@@ -1,9 +1,6 @@
 package humanize
 
-import (
-	"fmt"
-	"math"
-)
+import "math"
 
 var siPrefixTable = map[float64]string{
 	-24: "y", // yocto
@@ -52,5 +49,5 @@ func newSI(input float64) (float64, string) {
 // e.g. SI(2.2345e-12, "F") -> 2.2345pF
 func SI(input float64, unit string) string {
 	value, prefix := newSI(input)
-	return fmt.Sprintf("%s%s%s", Ftoa(value), prefix, unit)
+	return Ftoa(value) + prefix + unit
 }
