@@ -17,6 +17,7 @@ const (
 )
 
 // Time formats a time into a relative string.
+//
 // Time(someT) -> "3 weeks ago"
 func Time(then time.Time) string {
 	now := time.Now()

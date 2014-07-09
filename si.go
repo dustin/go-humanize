@@ -24,7 +24,9 @@ var siPrefixTable = map[float64]string{
 
 // ComputeSI finds the most appropriate SI prefix for the given number
 // and returns the prefix along with the value adjusted to be within
-// that prefix.  e.g. 2.2345e-12 -> (2.2345, "p")
+// that prefix.
+//
+// e.g. ComputeSI(2.2345e-12) -> (2.2345, "p")
 func ComputeSI(input float64) (float64, string) {
 	if input == 0 {
 		return 0, ""
@@ -45,8 +47,10 @@ func ComputeSI(input float64) (float64, string) {
 	return value, prefix
 }
 
-// SI returns a string with default formatting
-// Uses Ftoa to format float value, removing trailing zeros
+// SI returns a string with default formatting.
+//
+// SI uses Ftoa to format float value, removing trailing zeros.
+//
 // e.g. SI(1000000, B) -> 1MB
 // e.g. SI(2.2345e-12, "F") -> 2.2345pF
 func SI(input float64, unit string) string {

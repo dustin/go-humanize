@@ -110,6 +110,7 @@ func humanateBigBytes(s, base *big.Int, sizes []string) string {
 }
 
 // BigBytes produces a human readable representation of an SI size.
+//
 // BigBytes(82854982) -> 83MB
 func BigBytes(s *big.Int) string {
 	sizes := []string{"B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"}
@@ -117,6 +118,7 @@ func BigBytes(s *big.Int) string {
 }
 
 // BigIBytes produces a human readable representation of an IEC size.
+//
 // BigIBytes(82854982) -> 79MiB
 func BigIBytes(s *big.Int) string {
 	sizes := []string{"B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"}
@@ -125,6 +127,7 @@ func BigIBytes(s *big.Int) string {
 
 // ParseBigBytes parses a string representation of bytes into the number
 // of bytes it represents.
+//
 // ParseBigBytes("42MB") -> 42000000, nil
 // ParseBigBytes("42mib") -> 44040192, nil
 func ParseBigBytes(s string) (*big.Int, error) {
