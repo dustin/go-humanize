@@ -1,6 +1,11 @@
 package humanize
 
-import "math"
+import (
+	"fmt"
+	"math"
+	"regexp"
+	"strconv"
+)
 
 var siPrefixTable = map[float64]string{
 	-24: "y", // yocto
@@ -20,6 +25,28 @@ var siPrefixTable = map[float64]string{
 	18:  "E", // exa
 	21:  "Z", // zetta
 	24:  "Y", // yotta
+}
+
+var revSIPrefixTable = revfmap(siPrefixTable)
+
+func revfmap(in map[float64]string) map[string]float64 {
+	rv := map[string]float64{}
+	for k, v := range in {
+		rv[v] = k
+	}
+	return rv
+}
+
+var riParseRegex *regexp.Regexp
+
+func init() {
+	ri := `^([0-9.]+)([`
+	for _, v := range siPrefixTable {
+		ri += v
+	}
+	ri += `]?)(.*)`
+
+	riParseRegex = regexp.MustCompile(ri)
 }
 
 // ComputeSI finds the most appropriate SI prefix for the given number
@@ -56,4 +83,20 @@ func ComputeSI(input float64) (float64, string) {
 func SI(input float64, unit string) string {
 	value, prefix := ComputeSI(input)
 	return Ftoa(value) + prefix + unit
+}
+
+// ParseSI parses an SI string back into the number and unit.
+//
+// e.g. ParseSI(2.2345pF) -> (2.2345e-12, "F", nil)
+func ParseSI(input string) (float64, string, error) {
+	found := riParseRegex.FindStringSubmatch(input)
+	if len(found) != 4 {
+		return 0, "", fmt.Errorf("Invalid input")
+	}
+	mag := revSIPrefixTable[found[2]]
+	unit := found[3]
+
+	// func ParseFloat(s string, bitSize int) (f float64, err error)
+	base, err := strconv.ParseFloat(found[1], 64)
+	return base * math.Pow(10, mag), unit, err
 }
