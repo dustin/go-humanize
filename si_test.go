@@ -90,3 +90,9 @@ func TestSI(t *testing.T) {
 		t.Errorf("Expected error on x1.21JW, got %v %v", gotf, gotu)
 	}
 }
+
+func BenchmarkParseSI(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		ParseSI("2.2346ZB")
+	}
+}

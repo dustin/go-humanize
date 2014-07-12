@@ -29,10 +29,11 @@ var siPrefixTable = map[float64]string{
 
 var revSIPrefixTable = revfmap(siPrefixTable)
 
+// revfmap reverses the map and precomputes the power multiplier
 func revfmap(in map[float64]string) map[string]float64 {
 	rv := map[string]float64{}
 	for k, v := range in {
-		rv[v] = k
+		rv[v] = math.Pow(10, k)
 	}
 	return rv
 }
@@ -98,5 +99,5 @@ func ParseSI(input string) (float64, string, error) {
 
 	// func ParseFloat(s string, bitSize int) (f float64, err error)
 	base, err := strconv.ParseFloat(found[1], 64)
-	return base * math.Pow(10, mag), unit, err
+	return base * mag, unit, err
 }
