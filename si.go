@@ -1,7 +1,7 @@
 package humanize
 
 import (
-	"fmt"
+	"errors"
 	"math"
 	"regexp"
 	"strconv"
@@ -86,18 +86,19 @@ func SI(input float64, unit string) string {
 	return Ftoa(value) + prefix + unit
 }
 
+var errInvalid = errors.New("invalid input")
+
 // ParseSI parses an SI string back into the number and unit.
 //
 // e.g. ParseSI(2.2345pF) -> (2.2345e-12, "F", nil)
 func ParseSI(input string) (float64, string, error) {
 	found := riParseRegex.FindStringSubmatch(input)
 	if len(found) != 4 {
-		return 0, "", fmt.Errorf("Invalid input")
+		return 0, "", errInvalid
 	}
 	mag := revSIPrefixTable[found[2]]
 	unit := found[3]
 
-	// func ParseFloat(s string, bitSize int) (f float64, err error)
 	base, err := strconv.ParseFloat(found[1], 64)
 	return base * mag, unit, err
 }
