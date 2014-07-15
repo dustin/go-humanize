@@ -205,3 +205,15 @@ func TestParseVeryBig(t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkParseBigBytes(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		ParseBigBytes("16.5Z")
+	}
+}
+
+func BenchmarkBigBytes(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		bibyte(16.5 * GByte)
+	}
+}

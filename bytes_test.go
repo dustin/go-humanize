@@ -128,3 +128,15 @@ func TestBytes(t *testing.T) {
 		{"bytes(5.5GB)", Bytes(5.5 * GByte), "5.5GB"},
 	}.validate(t)
 }
+
+func BenchmarkParseBytes(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		ParseBytes("16.5GB")
+	}
+}
+
+func BenchmarkBytes(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Bytes(16.5 * GByte)
+	}
+}
