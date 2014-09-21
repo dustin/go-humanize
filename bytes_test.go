@@ -81,6 +81,7 @@ func TestBytes(t *testing.T) {
 		{"bytes(999)", Bytes(999), "999B"},
 
 		{"bytes(1024)", Bytes(1024), "1.0KB"},
+		{"bytes(9999)", Bytes(9999), "10KB"},
 		{"bytes(1MB - 1)", Bytes(MByte - Byte), "1000KB"},
 
 		{"bytes(1MB)", Bytes(1024 * 1024), "1.0MB"},
