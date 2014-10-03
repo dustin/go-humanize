@@ -20,15 +20,24 @@ const (
 //
 // Time(someT) -> "3 weeks ago"
 func Time(then time.Time) string {
-	now := time.Now()
+	return RelTime(then, time.Now(), "ago", "from now")
+}
 
-	lbl := "ago"
-	diff := now.Unix() - then.Unix()
+// RelTime formats a time into a relative string.
+//
+// It takes two times and two labels.  In addition to the generic time
+// delta string (e.g. 5 minutes), the labels are used applied so that
+// the label corresponding to the smaller time is applied.
+//
+// RelTime(timeInPast, timeInFuture, "earlier", "later") -> "3 weeks earlier"
+func RelTime(a, b time.Time, albl, blbl string) string {
+	lbl := albl
+	diff := b.Unix() - a.Unix()
 
-	after := then.After(now)
+	after := a.After(b)
 	if after {
-		lbl = "from now"
-		diff = then.Unix() - now.Unix()
+		lbl = blbl
+		diff = a.Unix() - b.Unix()
 	}
 
 	switch {
