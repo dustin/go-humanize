@@ -2,6 +2,7 @@ package humanize
 
 import (
 	"fmt"
+	"math"
 	"sort"
 	"time"
 )
@@ -45,6 +46,7 @@ var magnitudes = []struct {
 	{18 * Month, "1 year %s", 1},
 	{2 * Year, "2 years %s", 1},
 	{LongTime, "%d years %s", Year},
+	{math.MaxInt64, "a long while %s", 1},
 }
 
 // RelTime formats a time into a relative string.
@@ -67,13 +69,6 @@ func RelTime(a, b time.Time, albl, blbl string) string {
 	n := sort.Search(len(magnitudes), func(i int) bool {
 		return magnitudes[i].d > diff
 	})
-
-	if n >= len(magnitudes) {
-		if after {
-			return "a while from now"
-		}
-		return "long ago"
-	}
 
 	mag := magnitudes[n]
 	args := []interface{}{}

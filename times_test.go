@@ -32,7 +32,7 @@ func TestPast(t *testing.T) {
 		{"2 years ago (2)", Time(time.Unix(now-725*Day, 0)), "2 years ago"},
 		{"2 years ago (3)", Time(time.Unix(now-800*Day, 0)), "2 years ago"},
 		{"3 years ago", Time(time.Unix(now-3*Year, 0)), "3 years ago"},
-		{"long ago", Time(time.Unix(now-LongTime, 0)), "long ago"},
+		{"long ago", Time(time.Unix(now-LongTime, 0)), "a long while ago"},
 	}.validate(t)
 }
 
@@ -56,6 +56,6 @@ func TestFuture(t *testing.T) {
 		{"1 month from now", Time(time.Unix(now+30*Day, 0)), "1 month from now"},
 		{"1 year from now", Time(time.Unix(now+365*Day, 0)), "1 year from now"},
 		{"2 years from now", Time(time.Unix(now+2*Year, 0)), "2 years from now"},
-		{"a while from now", Time(time.Unix(now+LongTime, 0)), "a while from now"},
+		{"a while from now", Time(time.Unix(now+LongTime, 0)), "a long while from now"},
 	}.validate(t)
 }
