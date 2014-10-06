@@ -1,6 +1,7 @@
 package humanize
 
 import (
+	"math"
 	"testing"
 	"time"
 )
@@ -58,4 +59,13 @@ func TestFuture(t *testing.T) {
 		{"2 years from now", Time(time.Unix(now+2*Year, 0)), "2 years from now"},
 		{"a while from now", Time(time.Unix(now+LongTime, 0)), "a long while from now"},
 	}.validate(t)
+}
+
+func TestRange(t *testing.T) {
+	start := time.Time{}
+	end := time.Unix(math.MaxInt64, math.MaxInt64)
+	x := RelTime(start, end, "ago", "from now")
+	if x != "a long while from now" {
+		t.Errorf("Expected a long while from now, got %q", x)
+	}
 }
