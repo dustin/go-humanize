@@ -11,13 +11,13 @@ import (
 // IEC Sizes.
 // kibis of bits
 const (
-	Byte   = 1
-	KiByte = Byte * 1024
-	MiByte = KiByte * 1024
-	GiByte = MiByte * 1024
-	TiByte = GiByte * 1024
-	PiByte = TiByte * 1024
-	EiByte = PiByte * 1024
+	Byte = 1 << (iota * 10)
+	KiByte
+	MiByte
+	GiByte
+	TiByte
+	PiByte
+	EiByte
 )
 
 // SI Sizes.
@@ -71,7 +71,7 @@ func humanateBytes(s uint64, base float64, sizes []string) string {
 	}
 	e := math.Floor(logn(float64(s), base))
 	suffix := sizes[int(e)]
-	val := math.Floor(float64(s) / math.Pow(base, math.Floor(e)) * 10 + 0.5) / 10
+	val := math.Floor(float64(s)/math.Pow(base, math.Floor(e))*10+0.5) / 10
 	f := "%.0f"
 	if val < 10 {
 		f = "%.1f"
