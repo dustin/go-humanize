@@ -71,14 +71,13 @@ func humanateBytes(s uint64, base float64, sizes []string) string {
 	}
 	e := math.Floor(logn(float64(s), base))
 	suffix := sizes[int(e)]
-	val := math.Floor(float64(s)/math.Pow(base, math.Floor(e))*10+0.5) / 10
-	f := "%.0f"
+	val := math.Floor(float64(s)/math.Pow(base, e)*10+0.5) / 10
+	f := "%.0f%s"
 	if val < 10 {
-		f = "%.1f"
+		f = "%.1f%s"
 	}
 
-	return fmt.Sprintf(f+"%s", val, suffix)
-
+	return fmt.Sprintf(f, val, suffix)
 }
 
 // Bytes produces a human readable representation of an SI size.
@@ -86,7 +85,7 @@ func humanateBytes(s uint64, base float64, sizes []string) string {
 // Bytes(82854982) -> 83MB
 func Bytes(s uint64) string {
 	sizes := []string{"B", "KB", "MB", "GB", "TB", "PB", "EB"}
-	return humanateBytes(uint64(s), 1000, sizes)
+	return humanateBytes(s, 1000, sizes)
 }
 
 // IBytes produces a human readable representation of an IEC size.
@@ -94,7 +93,7 @@ func Bytes(s uint64) string {
 // IBytes(82854982) -> 79MiB
 func IBytes(s uint64) string {
 	sizes := []string{"B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"}
-	return humanateBytes(uint64(s), 1024, sizes)
+	return humanateBytes(s, 1024, sizes)
 }
 
 // ParseBytes parses a string representation of bytes into the number

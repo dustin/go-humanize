@@ -100,12 +100,12 @@ func humanateBigBytes(s, base *big.Int, sizes []string) string {
 	c := (&big.Int{}).Set(s)
 	val, mag := oomm(c, base, len(sizes)-1)
 	suffix := sizes[mag]
-	f := "%.0f"
+	f := "%.0f%s"
 	if val < 10 {
-		f = "%.1f"
+		f = "%.1f%s"
 	}
 
-	return fmt.Sprintf(f+"%s", val, suffix)
+	return fmt.Sprintf(f, val, suffix)
 
 }
 
