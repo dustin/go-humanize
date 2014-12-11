@@ -55,7 +55,7 @@ func init() {
 // that prefix.
 //
 // e.g. ComputeSI(2.2345e-12) -> (2.2345, "p")
-func ComputeSI(input float64) (float64, string) {
+func (h *BaseHumanizer) ComputeSI(input float64) (float64, string) {
 	if input == 0 {
 		return 0, ""
 	}
@@ -75,6 +75,26 @@ func ComputeSI(input float64) (float64, string) {
 	return value, prefix
 }
 
+// ComputeSI finds the most appropriate SI prefix for the given number
+// and returns the prefix along with the value adjusted to be within
+// that prefix.
+//
+// e.g. ComputeSI(2.2345e-12) -> (2.2345, "p")
+func ComputeSI(input float64) (float64, string) {
+	return Default.ComputeSI(input)
+}
+
+// SI returns a string with default formatting.
+//
+// SI uses Ftoa to format float value, removing trailing zeros.
+//
+// e.g. SI(1000000, B) -> 1MB
+// e.g. SI(2.2345e-12, "F") -> 2.2345pF
+func (h *BaseHumanizer) SI(input float64, unit string) string {
+	value, prefix := ComputeSI(input)
+	return Ftoa(value) + prefix + unit
+}
+
 // SI returns a string with default formatting.
 //
 // SI uses Ftoa to format float value, removing trailing zeros.
@@ -82,8 +102,7 @@ func ComputeSI(input float64) (float64, string) {
 // e.g. SI(1000000, B) -> 1MB
 // e.g. SI(2.2345e-12, "F") -> 2.2345pF
 func SI(input float64, unit string) string {
-	value, prefix := ComputeSI(input)
-	return Ftoa(value) + prefix + unit
+	return Default.SI(input, unit)
 }
 
 var errInvalid = errors.New("invalid input")
@@ -91,7 +110,7 @@ var errInvalid = errors.New("invalid input")
 // ParseSI parses an SI string back into the number and unit.
 //
 // e.g. ParseSI(2.2345pF) -> (2.2345e-12, "F", nil)
-func ParseSI(input string) (float64, string, error) {
+func (h *BaseHumanizer) ParseSI(input string) (float64, string, error) {
 	found := riParseRegex.FindStringSubmatch(input)
 	if len(found) != 4 {
 		return 0, "", errInvalid
@@ -101,4 +120,11 @@ func ParseSI(input string) (float64, string, error) {
 
 	base, err := strconv.ParseFloat(found[1], 64)
 	return base * mag, unit, err
+}
+
+// ParseSI parses an SI string back into the number and unit.
+//
+// e.g. ParseSI(2.2345pF) -> (2.2345e-12, "F", nil)
+func ParseSI(input string) (float64, string, error) {
+	return Default.ParseSI(input)
 }

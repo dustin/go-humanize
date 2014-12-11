@@ -6,11 +6,7 @@ import (
 	"strings"
 )
 
-// Comma produces a string form of the given number in base 10 with
-// commas after every three orders of magnitude.
-//
-// e.g. Comma(834142) -> 834,142
-func Comma(v int64) string {
+func (h *BaseHumanizer) commaWithSeparator(v int64, separator string) string {
 	sign := ""
 	if v < 0 {
 		sign = "-"
@@ -32,12 +28,28 @@ func Comma(v int64) string {
 		j--
 	}
 	parts[j] = strconv.Itoa(int(v))
-	return sign + strings.Join(parts[j:len(parts)], ",")
+	return sign + strings.Join(parts[j:len(parts)], separator)
+}
+
+// Comma produces a string form of the given number in base 10 with
+// commas after every three orders of magnitude.
+//
+// e.g. Comma(834142) -> 834,142
+func (h *EnglishHumanizer) Comma(v int64) string {
+	return h.commaWithSeparator(v, ",")
+}
+
+// Comma produces a string form of the given number in base 10 with
+// commas after every three orders of magnitude.
+//
+// e.g. Comma(834142) -> 834,142
+func Comma(v int64) string {
+	return Default.Comma(v)
 }
 
 // BigComma produces a string form of the given big.Int in base 10
 // with commas after every three orders of magnitude.
-func BigComma(b *big.Int) string {
+func (h *BaseHumanizer) bigCommaWithSeparator(b *big.Int, separator string) string {
 	sign := ""
 	if b.Sign() < 0 {
 		sign = "-"
@@ -63,5 +75,17 @@ func BigComma(b *big.Int) string {
 		j--
 	}
 	parts[j] = strconv.Itoa(int(b.Int64()))
-	return sign + strings.Join(parts[j:len(parts)], ",")
+	return sign + strings.Join(parts[j:len(parts)], separator)
+}
+
+// BigComma produces a string form of the given big.Int in base 10
+// with commas after every three orders of magnitude.
+func (h *EnglishHumanizer) BigComma(b *big.Int) string {
+	return h.bigCommaWithSeparator(b, ",")
+}
+
+// BigComma produces a string form of the given big.Int in base 10
+// with commas after every three orders of magnitude.
+func BigComma(b *big.Int) string {
+	return Default.BigComma(b)
 }

@@ -18,6 +18,11 @@ func stripTrailingZeros(s string) string {
 }
 
 // Ftoa converts a float to a string with no trailing zeros.
-func Ftoa(num float64) string {
+func (h *BaseHumanizer) Ftoa(num float64) string {
 	return stripTrailingZeros(strconv.FormatFloat(num, 'f', 6, 64))
+}
+
+// Ftoa converts a float to a string with no trailing zeros.
+func Ftoa(num float64) string {
+	return Default.Ftoa(num)
 }

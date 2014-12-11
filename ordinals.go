@@ -5,7 +5,7 @@ import "strconv"
 // Ordinal gives you the input number in a rank/ordinal format.
 //
 // Ordinal(3) -> 3rd
-func Ordinal(x int) string {
+func (h *EnglishHumanizer) Ordinal(x int) string {
 	suffix := "th"
 	switch x % 10 {
 	case 1:
@@ -22,4 +22,11 @@ func Ordinal(x int) string {
 		}
 	}
 	return strconv.Itoa(x) + suffix
+}
+
+// Ordinal gives you the input number in a rank/ordinal format.
+//
+// Ordinal(3) -> 3rd
+func Ordinal(x int) string {
+	return Default.Ordinal(x)
 }

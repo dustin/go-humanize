@@ -112,17 +112,31 @@ func humanateBigBytes(s, base *big.Int, sizes []string) string {
 // BigBytes produces a human readable representation of an SI size.
 //
 // BigBytes(82854982) -> 83MB
-func BigBytes(s *big.Int) string {
+func (h *BaseHumanizer) BigBytes(s *big.Int) string {
 	sizes := []string{"B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"}
 	return humanateBigBytes(s, bigSIExp, sizes)
+}
+
+// BigBytes produces a human readable representation of an SI size.
+//
+// BigBytes(82854982) -> 83MB
+func BigBytes(s *big.Int) string {
+	return Default.BigBytes(s)
+}
+
+// BigIBytes produces a human readable representation of an IEC size.
+//
+// BigIBytes(82854982) -> 79MiB
+func (h *BaseHumanizer) BigIBytes(s *big.Int) string {
+	sizes := []string{"B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"}
+	return humanateBigBytes(s, bigIECExp, sizes)
 }
 
 // BigIBytes produces a human readable representation of an IEC size.
 //
 // BigIBytes(82854982) -> 79MiB
 func BigIBytes(s *big.Int) string {
-	sizes := []string{"B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"}
-	return humanateBigBytes(s, bigIECExp, sizes)
+	return Default.BigIBytes(s)
 }
 
 // ParseBigBytes parses a string representation of bytes into the number
@@ -130,7 +144,7 @@ func BigIBytes(s *big.Int) string {
 //
 // ParseBigBytes("42MB") -> 42000000, nil
 // ParseBigBytes("42mib") -> 44040192, nil
-func ParseBigBytes(s string) (*big.Int, error) {
+func (h *BaseHumanizer) ParseBigBytes(s string) (*big.Int, error) {
 	lastDigit := 0
 	for _, r := range s {
 		if !(unicode.IsDigit(r) || r == '.') {
@@ -155,4 +169,13 @@ func ParseBigBytes(s string) (*big.Int, error) {
 	}
 
 	return nil, fmt.Errorf("unhandled size name: %v", extra)
+}
+
+// ParseBigBytes parses a string representation of bytes into the number
+// of bytes it represents.
+//
+// ParseBigBytes("42MB") -> 42000000, nil
+// ParseBigBytes("42mib") -> 44040192, nil
+func ParseBigBytes(s string) (*big.Int, error) {
+	return Default.ParseBigBytes(s)
 }

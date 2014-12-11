@@ -6,3 +6,5 @@ representing sizes like 82854982 into useful strings like, "83MB" or
 "79MiB" (whichever you prefer).
 */
 package humanize
+
+type BaseHumanizer struct{}
