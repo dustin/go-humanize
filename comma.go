@@ -35,6 +35,20 @@ func Comma(v int64) string {
 	return sign + strings.Join(parts[j:len(parts)], ",")
 }
 
+// Commaf produces a string form of the given number in base 10 with
+// commas after every three orders of magnitude.
+//
+// e.g. Comma(834142.32) -> 834,142.32
+func Commaf(v float64) string {
+	parts := strings.Split(strconv.FormatFloat(v, 'f', -1, 64), ".")
+	i, _ := (&big.Int{}).SetString(parts[0], 10)
+	rv := BigComma(i)
+	if len(parts) > 1 {
+		rv += "." + parts[1]
+	}
+	return rv
+}
+
 // BigComma produces a string form of the given big.Int in base 10
 // with commas after every three orders of magnitude.
 func BigComma(b *big.Int) string {
