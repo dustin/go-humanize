@@ -42,6 +42,7 @@ func TestCommafs(t *testing.T) {
 		{"1,000", Commaf(1000), "1,000"},
 		{"10,000", Commaf(10000), "10,000"},
 		{"100,000", Commaf(100000), "100,000"},
+		{"834,142.32", Commaf(834142.32), "834,142.32"},
 		{"10,000,000", Commaf(10000000), "10,000,000"},
 		{"10,100,000", Commaf(10100000), "10,100,000"},
 		{"10,010,000", Commaf(10010000), "10,010,000"},
@@ -65,6 +66,12 @@ func TestCommafs(t *testing.T) {
 func BenchmarkCommas(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		Comma(1234567890)
+	}
+}
+
+func BenchmarkCommaf(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Commaf(1234567890.83584)
 	}
 }
 
