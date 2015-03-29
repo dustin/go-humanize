@@ -40,9 +40,24 @@ func Comma(v int64) string {
 //
 // e.g. Comma(834142.32) -> 834,142.32
 func Commaf(v float64) string {
+	sign := ""
+	if v < 0 {
+		sign = "-"
+		v = 0 - v
+	}
+
 	parts := strings.Split(strconv.FormatFloat(v, 'f', -1, 64), ".")
-	i, _ := (&big.Int{}).SetString(parts[0], 10)
-	rv := BigComma(i)
+	segs := make([]string, 0, len(parts[0])/3)
+	pos := 0
+	if len(parts[0])%3 != 0 {
+		pos += len(parts[0]) % 3
+		segs = append(segs, parts[0][:pos])
+	}
+	for ; pos < len(parts[0]); pos += 3 {
+		segs = append(segs, parts[0][pos:pos+3])
+	}
+
+	rv := sign + strings.Join(segs, ",")
 	if len(parts) > 1 {
 		rv += "." + parts[1]
 	}
