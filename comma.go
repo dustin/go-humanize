@@ -1,6 +1,7 @@
 package humanize
 
 import (
+	"bytes"
 	"math/big"
 	"strconv"
 	"strings"
@@ -40,28 +41,35 @@ func Comma(v int64) string {
 //
 // e.g. Comma(834142.32) -> 834,142.32
 func Commaf(v float64) string {
-	sign := ""
+	buf := &bytes.Buffer{}
 	if v < 0 {
-		sign = "-"
+		buf.Write([]byte{'-'})
 		v = 0 - v
 	}
 
+	comma := []byte{','}
+
 	parts := strings.Split(strconv.FormatFloat(v, 'f', -1, 64), ".")
-	segs := make([]string, 0, len(parts[0])/3)
 	pos := 0
 	if len(parts[0])%3 != 0 {
 		pos += len(parts[0]) % 3
-		segs = append(segs, parts[0][:pos])
+		buf.WriteString(parts[0][:pos])
+		if len(parts[0]) > pos+2 {
+			buf.Write(comma)
+		}
 	}
 	for ; pos < len(parts[0]); pos += 3 {
-		segs = append(segs, parts[0][pos:pos+3])
+		buf.WriteString(parts[0][pos : pos+3])
+		if len(parts[0]) > pos+3 {
+			buf.Write(comma)
+		}
 	}
 
-	rv := sign + strings.Join(segs, ",")
 	if len(parts) > 1 {
-		rv += "." + parts[1]
+		buf.Write([]byte{'.'})
+		buf.WriteString(parts[1])
 	}
-	return rv
+	return buf.String()
 }
 
 // BigComma produces a string form of the given big.Int in base 10
