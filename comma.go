@@ -54,16 +54,13 @@ func Commaf(v float64) string {
 	if len(parts[0])%3 != 0 {
 		pos += len(parts[0]) % 3
 		buf.WriteString(parts[0][:pos])
-		if len(parts[0]) > pos+2 {
-			buf.Write(comma)
-		}
+		buf.Write(comma)
 	}
 	for ; pos < len(parts[0]); pos += 3 {
 		buf.WriteString(parts[0][pos : pos+3])
-		if len(parts[0]) > pos+3 {
-			buf.Write(comma)
-		}
+		buf.Write(comma)
 	}
+	buf.Truncate(buf.Len() - 1)
 
 	if len(parts) > 1 {
 		buf.Write([]byte{'.'})
