@@ -21,8 +21,15 @@ const (
 // Time formats a time into a relative string.
 //
 // Time(someT) -> "3 weeks ago"
-func Time(then time.Time) string {
+func (h *EnglishHumanizer) Time(then time.Time) string {
 	return RelTime(then, time.Now(), "ago", "from now")
+}
+
+// Time formats a time into a relative string.
+//
+// Time(someT) -> "3 weeks ago"
+func Time(then time.Time) string {
+	return Default.Time(then)
 }
 
 var magnitudes = []struct {
@@ -56,7 +63,7 @@ var magnitudes = []struct {
 // the label corresponding to the smaller time is applied.
 //
 // RelTime(timeInPast, timeInFuture, "earlier", "later") -> "3 weeks earlier"
-func RelTime(a, b time.Time, albl, blbl string) string {
+func (h *EnglishHumanizer) RelTime(a, b time.Time, albl, blbl string) string {
 	lbl := albl
 	diff := b.Unix() - a.Unix()
 
@@ -88,4 +95,15 @@ func RelTime(a, b time.Time, albl, blbl string) string {
 		}
 	}
 	return fmt.Sprintf(mag.format, args...)
+}
+
+// RelTime formats a time into a relative string.
+//
+// It takes two times and two labels.  In addition to the generic time
+// delta string (e.g. 5 minutes), the labels are used applied so that
+// the label corresponding to the smaller time is applied.
+//
+// RelTime(timeInPast, timeInFuture, "earlier", "later") -> "3 weeks earlier"
+func RelTime(a, b time.Time, albl, blbl string) string {
+	return Default.RelTime(a, b, albl, blbl)
 }
