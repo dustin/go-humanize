@@ -13,31 +13,33 @@ import (
 	"strconv"
 )
 
-var renderFloatPrecisionMultipliers = [10]float64{
-	1,
-	10,
-	100,
-	1000,
-	10000,
-	100000,
-	1000000,
-	10000000,
-	100000000,
-	1000000000,
-}
+var (
+	renderFloatPrecisionMultipliers = [...]float64{
+		1,
+		10,
+		100,
+		1000,
+		10000,
+		100000,
+		1000000,
+		10000000,
+		100000000,
+		1000000000,
+	}
 
-var renderFloatPrecisionRounders = [10]float64{
-	0.5,
-	0.05,
-	0.005,
-	0.0005,
-	0.00005,
-	0.000005,
-	0.0000005,
-	0.00000005,
-	0.000000005,
-	0.0000000005,
-}
+	renderFloatPrecisionRounders = [...]float64{
+		0.5,
+		0.05,
+		0.005,
+		0.0005,
+		0.00005,
+		0.000005,
+		0.0000005,
+		0.00000005,
+		0.000000005,
+		0.0000000005,
+	}
+)
 
 // FormatFloat produces a formatted number as string based on the following user-specified criteria:
 // * thousands separator
@@ -53,7 +55,7 @@ var renderFloatPrecisionRounders = [10]float64{
 // "#,###.##" => "12,345.67"
 // "#,###." => "12,345"
 // "#,###" => "12345,678"
-// "#\u202F###,##" => "12â€¯345,67"
+// "#\u202F###,##" => "12 345,68"
 // "#.###,###### => 12.345,678900
 // "" (aka default format) => 12,345.67
 //
@@ -83,21 +85,22 @@ func FormatFloat(format string, n float64) string {
 	negativeStr := "-"
 
 	if len(format) > 0 {
+		format := []rune(format)
+
 		// If there is an explicit format directive,
 		// then default values are these:
 		precision = 9
 		thousandStr = ""
 
 		// collect indices of meaningful formatting directives
-		formatDirectiveChars := []rune(format)
-		formatDirectiveIndices := make([]int, 0)
-		for i, char := range formatDirectiveChars {
+		formatIndx := []int{}
+		for i, char := range format {
 			if char != '#' && char != '0' {
-				formatDirectiveIndices = append(formatDirectiveIndices, i)
+				formatIndx = append(formatIndx, i)
 			}
 		}
 
-		if len(formatDirectiveIndices) > 0 {
+		if len(formatIndx) > 0 {
 			// Directive at index 0:
 			//   Must be a '+'
 			//   Raise an error if not the case
@@ -106,12 +109,12 @@ func FormatFloat(format string, n float64) string {
 			//        +000,000.0
 			//        +0000.00
 			//        +0000
-			if formatDirectiveIndices[0] == 0 {
-				if formatDirectiveChars[formatDirectiveIndices[0]] != '+' {
+			if formatIndx[0] == 0 {
+				if format[formatIndx[0]] != '+' {
 					panic("RenderFloat(): invalid positive sign directive")
 				}
 				positiveStr = "+"
-				formatDirectiveIndices = formatDirectiveIndices[1:]
+				formatIndx = formatIndx[1:]
 			}
 
 			// Two directives:
@@ -120,12 +123,12 @@ func FormatFloat(format string, n float64) string {
 			// 0123456789
 			// 0.000,000
 			// 000,000.00
-			if len(formatDirectiveIndices) == 2 {
-				if (formatDirectiveIndices[1] - formatDirectiveIndices[0]) != 4 {
+			if len(formatIndx) == 2 {
+				if (formatIndx[1] - formatIndx[0]) != 4 {
 					panic("RenderFloat(): thousands separator directive must be followed by 3 digit-specifiers")
 				}
-				thousandStr = string(formatDirectiveChars[formatDirectiveIndices[0]])
-				formatDirectiveIndices = formatDirectiveIndices[1:]
+				thousandStr = string(format[formatIndx[0]])
+				formatIndx = formatIndx[1:]
 			}
 
 			// One directive:
@@ -134,9 +137,9 @@ func FormatFloat(format string, n float64) string {
 			// 0123456789
 			// 0.00
 			// 000,0000
-			if len(formatDirectiveIndices) == 1 {
-				decimalStr = string(formatDirectiveChars[formatDirectiveIndices[0]])
-				precision = len(formatDirectiveChars) - formatDirectiveIndices[0] - 1
+			if len(formatIndx) == 1 {
+				decimalStr = string(format[formatIndx[0]])
+				precision = len(format) - formatIndx[0] - 1
 			}
 		}
 	}
