@@ -76,3 +76,10 @@ Example:
 
 [odisc]: https://groups.google.com/d/topic/golang-nuts/l8NhI74jl-4/discussion
 [sinotation]: http://en.wikipedia.org/wiki/Metric_prefix
+
+## Bool
+
+Want to show a boolean value to a user so that he understands it?  
+
+    fmt.Printf("%v", humanize.Bool(true)) // --> yes
+    fmt.Printf("%v", humanize.Bool(false)) // --> no
