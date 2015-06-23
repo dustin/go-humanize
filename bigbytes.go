@@ -115,7 +115,7 @@ func humanateBigBytes(s, base *big.Int, sizes []string) string {
 //
 // BigBytes(82854982) -> 83MB
 func BigBytes(s *big.Int) string {
-	sizes := []string{"B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"}
+	sizes := []string{"B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"}
 	return humanateBigBytes(s, bigSIExp, sizes)
 }
 

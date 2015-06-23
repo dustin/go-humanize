@@ -86,7 +86,7 @@ func humanateBytes(s uint64, base float64, sizes []string) string {
 //
 // Bytes(82854982) -> 83MB
 func Bytes(s uint64) string {
-	sizes := []string{"B", "KB", "MB", "GB", "TB", "PB", "EB"}
+	sizes := []string{"B", "kB", "MB", "GB", "TB", "PB", "EB"}
 	return humanateBytes(s, 1000, sizes)
 }
 
