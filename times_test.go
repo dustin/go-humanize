@@ -69,3 +69,31 @@ func TestRange(t *testing.T) {
 		t.Errorf("Expected a long while from now, got %q", x)
 	}
 }
+
+func TestRelTimeMagnitudes(t *testing.T) {
+	magnitudes := []Magnitude{
+		NewMagnitude(1, "now", 1),
+		NewMagnitude(2, "1s %s", 1),
+		NewMagnitude(Minute, "s %s", 1),
+		NewMagnitude(2*Minute, "1m %s", 1),
+		NewMagnitude(Hour, "%dm %s", Minute),
+		NewMagnitude(2*Hour, "1h %s", 1),
+		NewMagnitude(Day, "%dh %s", Hour),
+		NewMagnitude(2*Day, "1D %s", 1),
+		NewMagnitude(Month, "%dD %s", Day),
+		NewMagnitude(2*Month, "1M %s", 1),
+		NewMagnitude(Year, "%dM %s", Month),
+		NewMagnitude(18*Month, "1Y %s", 1),
+		NewMagnitude(2*Year, "2Y %s", 1),
+	}
+	now := time.Now().Unix()
+	testList{
+		{"now", RelTimeMagnitudes(time.Unix(now, 0), time.Now(), "ago", "later", magnitudes), "now"},
+		{"1 second from now", RelTimeMagnitudes(time.Unix(now+1, 0), time.Now(), "ago", "later", magnitudes), "1s later"},
+		// Unit week has been removed from magnitudes
+		{"1 week ago", RelTimeMagnitudes(time.Unix(now-12*Day, 0), time.Now(), "ago", "", magnitudes), "12D ago"},
+		{"3 months ago", RelTimeMagnitudes(time.Unix(now-99*Day, 0), time.Now(), "ago", "later", magnitudes), "3M ago"},
+		{"1 year ago", RelTimeMagnitudes(time.Unix(now-365*Day, 0), time.Now(), "", "later", magnitudes), "1Y "},
+		{"out of defined magnitudes", RelTimeMagnitudes(time.Unix(now+LongTime, 0), time.Now(), "ago", "later", magnitudes), "undefined"},
+	}.validate(t)
+}
