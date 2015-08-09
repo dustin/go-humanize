@@ -5,6 +5,9 @@ Just a few functions for helping humanize times and sizes.
 `go get` it as `github.com/dustin/go-humanize`, import it as
 `"github.com/dustin/go-humanize"`, use it as `humanize`
 
+See [godoc](http://godoc.org/github.com/dustin/go-humanize) for
+complete documentation.
+
 ## Sizes
 
 This lets you take numbers like `82854982` and convert them to useful
