@@ -44,7 +44,7 @@ func BenchmarkFtoaFunc(b *testing.B) {
 
 func BenchmarkFmtF(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		fmt.Sprintf("%f", 2.03584)
+		_ = fmt.Sprintf("%f", 2.03584)
 	}
 }
 

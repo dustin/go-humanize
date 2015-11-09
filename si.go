@@ -41,7 +41,7 @@ func revfmap(in map[float64]string) map[string]float64 {
 var riParseRegex *regexp.Regexp
 
 func init() {
-	ri := `^([0-9.]+)([`
+	ri := `^([0-9.]+)\s?([`
 	for _, v := range siPrefixTable {
 		ri += v
 	}
@@ -87,7 +87,7 @@ func ComputeSI(input float64) (float64, string) {
 // e.g. SI(2.2345e-12, "F") -> 2.2345pF
 func SI(input float64, unit string) string {
 	value, prefix := ComputeSI(input)
-	return Ftoa(value) + prefix + unit
+	return Ftoa(value) + " " + prefix + unit
 }
 
 var errInvalid = errors.New("invalid input")

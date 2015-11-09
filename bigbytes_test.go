@@ -81,91 +81,91 @@ func bibyte(in uint64) string {
 
 func TestBigBytes(t *testing.T) {
 	testList{
-		{"bytes(0)", bbyte(0), "0B"},
-		{"bytes(1)", bbyte(1), "1B"},
-		{"bytes(803)", bbyte(803), "803B"},
-		{"bytes(999)", bbyte(999), "999B"},
+		{"bytes(0)", bbyte(0), "0 B"},
+		{"bytes(1)", bbyte(1), "1 B"},
+		{"bytes(803)", bbyte(803), "803 B"},
+		{"bytes(999)", bbyte(999), "999 B"},
 
-		{"bytes(1024)", bbyte(1024), "1.0kB"},
-		{"bytes(1MB - 1)", bbyte(MByte - Byte), "1000kB"},
+		{"bytes(1024)", bbyte(1024), "1.0 kB"},
+		{"bytes(1MB - 1)", bbyte(MByte - Byte), "1000 kB"},
 
-		{"bytes(1MB)", bbyte(1024 * 1024), "1.0MB"},
-		{"bytes(1GB - 1K)", bbyte(GByte - KByte), "1000MB"},
+		{"bytes(1MB)", bbyte(1024 * 1024), "1.0 MB"},
+		{"bytes(1GB - 1K)", bbyte(GByte - KByte), "1000 MB"},
 
-		{"bytes(1GB)", bbyte(GByte), "1.0GB"},
-		{"bytes(1TB - 1M)", bbyte(TByte - MByte), "1000GB"},
+		{"bytes(1GB)", bbyte(GByte), "1.0 GB"},
+		{"bytes(1TB - 1M)", bbyte(TByte - MByte), "1000 GB"},
 
-		{"bytes(1TB)", bbyte(TByte), "1.0TB"},
-		{"bytes(1PB - 1T)", bbyte(PByte - TByte), "999TB"},
+		{"bytes(1TB)", bbyte(TByte), "1.0 TB"},
+		{"bytes(1PB - 1T)", bbyte(PByte - TByte), "999 TB"},
 
-		{"bytes(1PB)", bbyte(PByte), "1.0PB"},
-		{"bytes(1PB - 1T)", bbyte(EByte - PByte), "999PB"},
+		{"bytes(1PB)", bbyte(PByte), "1.0 PB"},
+		{"bytes(1PB - 1T)", bbyte(EByte - PByte), "999 PB"},
 
-		{"bytes(1EB)", bbyte(EByte), "1.0EB"},
+		{"bytes(1EB)", bbyte(EByte), "1.0 EB"},
 		// Overflows.
 		// {"bytes(1EB - 1P)", Bytes((KByte*EByte)-PByte), "1023EB"},
 
-		{"bytes(0)", bibyte(0), "0B"},
-		{"bytes(1)", bibyte(1), "1B"},
-		{"bytes(803)", bibyte(803), "803B"},
-		{"bytes(1023)", bibyte(1023), "1023B"},
+		{"bytes(0)", bibyte(0), "0 B"},
+		{"bytes(1)", bibyte(1), "1 B"},
+		{"bytes(803)", bibyte(803), "803 B"},
+		{"bytes(1023)", bibyte(1023), "1023 B"},
 
-		{"bytes(1024)", bibyte(1024), "1.0KiB"},
-		{"bytes(1MB - 1)", bibyte(MiByte - IByte), "1024KiB"},
+		{"bytes(1024)", bibyte(1024), "1.0 KiB"},
+		{"bytes(1MB - 1)", bibyte(MiByte - IByte), "1024 KiB"},
 
-		{"bytes(1MB)", bibyte(1024 * 1024), "1.0MiB"},
-		{"bytes(1GB - 1K)", bibyte(GiByte - KiByte), "1024MiB"},
+		{"bytes(1MB)", bibyte(1024 * 1024), "1.0 MiB"},
+		{"bytes(1GB - 1K)", bibyte(GiByte - KiByte), "1024 MiB"},
 
-		{"bytes(1GB)", bibyte(GiByte), "1.0GiB"},
-		{"bytes(1TB - 1M)", bibyte(TiByte - MiByte), "1024GiB"},
+		{"bytes(1GB)", bibyte(GiByte), "1.0 GiB"},
+		{"bytes(1TB - 1M)", bibyte(TiByte - MiByte), "1024 GiB"},
 
-		{"bytes(1TB)", bibyte(TiByte), "1.0TiB"},
-		{"bytes(1PB - 1T)", bibyte(PiByte - TiByte), "1023TiB"},
+		{"bytes(1TB)", bibyte(TiByte), "1.0 TiB"},
+		{"bytes(1PB - 1T)", bibyte(PiByte - TiByte), "1023 TiB"},
 
-		{"bytes(1PB)", bibyte(PiByte), "1.0PiB"},
-		{"bytes(1PB - 1T)", bibyte(EiByte - PiByte), "1023PiB"},
+		{"bytes(1PB)", bibyte(PiByte), "1.0 PiB"},
+		{"bytes(1PB - 1T)", bibyte(EiByte - PiByte), "1023 PiB"},
 
-		{"bytes(1EiB)", bibyte(EiByte), "1.0EiB"},
+		{"bytes(1EiB)", bibyte(EiByte), "1.0 EiB"},
 		// Overflows.
 		// {"bytes(1EB - 1P)", bibyte((KIByte*EIByte)-PiByte), "1023EB"},
 
-		{"bytes(5.5GiB)", bibyte(5.5 * GiByte), "5.5GiB"},
+		{"bytes(5.5GiB)", bibyte(5.5 * GiByte), "5.5 GiB"},
 
-		{"bytes(5.5GB)", bbyte(5.5 * GByte), "5.5GB"},
+		{"bytes(5.5GB)", bbyte(5.5 * GByte), "5.5 GB"},
 	}.validate(t)
 }
 
 func TestVeryBigBytes(t *testing.T) {
 	b, _ := (&big.Int{}).SetString("15347691069326346944512", 10)
 	s := BigBytes(b)
-	if s != "15ZB" {
-		t.Errorf("Expected 15ZB, got %v", s)
+	if s != "15 ZB" {
+		t.Errorf("Expected 15 ZB, got %v", s)
 	}
 	s = BigIBytes(b)
-	if s != "13ZiB" {
-		t.Errorf("Expected 13ZiB, got %v", s)
+	if s != "13 ZiB" {
+		t.Errorf("Expected 13 ZiB, got %v", s)
 	}
 
 	b, _ = (&big.Int{}).SetString("15716035654990179271180288", 10)
 	s = BigBytes(b)
-	if s != "16YB" {
-		t.Errorf("Expected 16YB, got %v", s)
+	if s != "16 YB" {
+		t.Errorf("Expected 16 YB, got %v", s)
 	}
 	s = BigIBytes(b)
-	if s != "13YiB" {
-		t.Errorf("Expected 13YiB, got %v", s)
+	if s != "13 YiB" {
+		t.Errorf("Expected 13 YiB, got %v", s)
 	}
 }
 
 func TestVeryVeryBigBytes(t *testing.T) {
 	b, _ := (&big.Int{}).SetString("16093220510709943573688614912", 10)
 	s := BigBytes(b)
-	if s != "16093YB" {
-		t.Errorf("Expected 16093YB, got %v", s)
+	if s != "16093 YB" {
+		t.Errorf("Expected 16093 YB, got %v", s)
 	}
 	s = BigIBytes(b)
-	if s != "13312YiB" {
-		t.Errorf("Expected 13312YiB, got %v", s)
+	if s != "13312 YiB" {
+		t.Errorf("Expected 13312 YiB, got %v", s)
 	}
 }
 
@@ -174,23 +174,23 @@ func TestParseVeryBig(t *testing.T) {
 		in  string
 		out string
 	}{
-		{"16ZB", "16000000000000000000000"},
-		{"16ZiB", "18889465931478580854784"},
-		{"16.5ZB", "16500000000000000000000"},
-		{"16.5ZiB", "19479761741837286506496"},
-		{"16Z", "16000000000000000000000"},
-		{"16Zi", "18889465931478580854784"},
-		{"16.5Z", "16500000000000000000000"},
-		{"16.5Zi", "19479761741837286506496"},
+		{"16 ZB", "16000000000000000000000"},
+		{"16 ZiB", "18889465931478580854784"},
+		{"16.5 ZB", "16500000000000000000000"},
+		{"16.5 ZiB", "19479761741837286506496"},
+		{"16 Z", "16000000000000000000000"},
+		{"16 Zi", "18889465931478580854784"},
+		{"16.5 Z", "16500000000000000000000"},
+		{"16.5 Zi", "19479761741837286506496"},
 
-		{"16YB", "16000000000000000000000000"},
-		{"16YiB", "19342813113834066795298816"},
-		{"16.5YB", "16500000000000000000000000"},
-		{"16.5YiB", "19947276023641381382651904"},
-		{"16Y", "16000000000000000000000000"},
-		{"16Yi", "19342813113834066795298816"},
-		{"16.5Y", "16500000000000000000000000"},
-		{"16.5Yi", "19947276023641381382651904"},
+		{"16 YB", "16000000000000000000000000"},
+		{"16 YiB", "19342813113834066795298816"},
+		{"16.5 YB", "16500000000000000000000000"},
+		{"16.5 YiB", "19947276023641381382651904"},
+		{"16 Y", "16000000000000000000000000"},
+		{"16 Yi", "19342813113834066795298816"},
+		{"16.5 Y", "16500000000000000000000000"},
+		{"16.5 Yi", "19947276023641381382651904"},
 	}
 
 	for _, test := range tests {
@@ -208,7 +208,7 @@ func TestParseVeryBig(t *testing.T) {
 
 func BenchmarkParseBigBytes(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		ParseBigBytes("16.5Z")
+		ParseBigBytes("16.5 Z")
 	}
 }
 
