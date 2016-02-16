@@ -6,6 +6,68 @@ import (
 	"time"
 )
 
+func TestPastAccurate(t *testing.T) {
+	now := time.Now()
+	testList{
+		{
+			"1 minute, 30 seconds ago",
+			AccurateTime(now.Add(-1 * time.Minute).Add(-30 * time.Second)),
+			"1 minute, 30 seconds ago",
+		},
+		{
+			"1 hour, 30 minutes ago (1)",
+			AccurateTime(now.Add(-1 * time.Hour).Add(-30 * time.Minute)),
+			"1 hour, 30 minutes ago",
+		},
+		{ // Discard extra time
+			"1 hour, 30 minutes ago (2)",
+			AccurateTime(now.Add(-1 * time.Hour).Add(-30 * time.Minute).Add(-30 * time.Second)),
+			"1 hour, 30 minutes ago",
+		},
+		{
+			"2 hours, 30 minutes ago (1)",
+			AccurateTime(now.Add(-2 * time.Hour).Add(-30 * time.Minute)),
+			"2 hours, 30 minutes ago",
+		},
+		{ // Discard extra time
+			"2 hours, 30 minutes ago (2)",
+			AccurateTime(now.Add(-2 * time.Hour).Add(-30 * time.Minute).Add(-30 * time.Second)),
+			"2 hours, 30 minutes ago",
+		},
+	}.validate(t)
+}
+
+func TestFutureAccurate(t *testing.T) {
+	now := time.Now()
+	testList{
+		{
+			"1 minute, 30 seconds from now",
+			AccurateTime(now.Add(1 * time.Minute).Add(30 * time.Second)),
+			"1 minute, 30 seconds from now",
+		},
+		{
+			"1 hour, 30 minutes from now (1)",
+			AccurateTime(now.Add(1 * time.Hour).Add(30 * time.Minute)),
+			"1 hour, 30 minutes from now",
+		},
+		{ // Discard extra time
+			"1 hour, 30 minutes from now (2)",
+			AccurateTime(now.Add(1 * time.Hour).Add(30 * time.Minute).Add(30 * time.Second)),
+			"1 hour, 30 minutes from now",
+		},
+		{
+			"2 hours, 30 minutes from now (1)",
+			AccurateTime(now.Add(2 * time.Hour).Add(30 * time.Minute)),
+			"2 hours, 30 minutes from now",
+		},
+		{ // Discard extra time
+			"2 hours, 30 minutes from now (2)",
+			AccurateTime(now.Add(2 * time.Hour).Add(30 * time.Minute).Add(30 * time.Second)),
+			"2 hours, 30 minutes from now",
+		},
+	}.validate(t)
+}
+
 func TestPast(t *testing.T) {
 	now := time.Now().Unix()
 	testList{
