@@ -87,7 +87,7 @@ func ComputeSI(input float64) (float64, string) {
 // e.g. SI(2.2345e-12, "F") -> 2.2345pF
 func SI(input float64, offset int, unit string) string {
 	value, prefix := ComputeSI(input)
-	return Ftoa(value, offset) + " " + prefix + unit
+	return Ftoa(value, offset) + prefix + unit
 }
 
 var errInvalid = errors.New("invalid input")
