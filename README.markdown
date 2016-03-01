@@ -72,10 +72,10 @@ fmt.Printf("You owe $%s.\n", humanize.Comma(6582491))
 Nicer float64 formatter that removes trailing zeros.
 
 ```go
-fmt.Printf("%f", 2.24)                   // 2.240000
-fmt.Printf("%s", humanize.Ftoa(2.24))    // 2.24
-fmt.Printf("%f", 2.0)                    // 2.000000
-fmt.Printf("%s", humanize.Ftoa(2.0))     // 2
+fmt.Printf("%f", 2.24)                      // 2.240000
+fmt.Printf("%s", humanize.Ftoa(2.24, 2))    // 2.24
+fmt.Printf("%f", 2.0)                       // 2.000000
+fmt.Printf("%s", humanize.Ftoa(2.0, 2))     // 2
 ```
 
 ## SI notation
@@ -85,7 +85,8 @@ Format numbers with [SI notation][sinotation].
 Example:
 
 ```go
-humanize.SI(0.00000000223, "M")    // 2.23nM
+humanize.SI(0.00000000223, "M")           // 2.23nM
+humanize.SI(123456789012.123, 2, "")      // 123.46 G
 ```
 
 [odisc]: https://groups.google.com/d/topic/golang-nuts/l8NhI74jl-4/discussion
