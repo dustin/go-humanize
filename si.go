@@ -41,7 +41,7 @@ func revfmap(in map[float64]string) map[string]float64 {
 var riParseRegex *regexp.Regexp
 
 func init() {
-	ri := `^([0-9.]+)\s?([`
+	ri := `^([\-0-9.]+)\s?([`
 	for _, v := range siPrefixTable {
 		ri += v
 	}
@@ -61,6 +61,10 @@ func ComputeSI(input float64) (float64, string) {
 	if input == 0 {
 		return 0, ""
 	}
+	isNegative := input < 0
+	if isNegative {
+		input *= -1
+	}
 	exponent := math.Floor(logn(input, 10))
 	exponent = math.Floor(exponent/3) * 3
 
@@ -71,6 +75,10 @@ func ComputeSI(input float64) (float64, string) {
 	if value == 1000.0 {
 		exponent += 3
 		value = input / math.Pow(10, exponent)
+	}
+
+	if isNegative {
+		value *= -1
 	}
 
 	prefix := siPrefixTable[exponent]
