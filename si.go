@@ -61,25 +61,20 @@ func ComputeSI(input float64) (float64, string) {
 	if input == 0 {
 		return 0, ""
 	}
-	isNegative := input < 0
-	if isNegative {
-		input *= -1
-	}
-	exponent := math.Floor(logn(input, 10))
+	mag := math.Abs(input)
+	exponent := math.Floor(logn(mag, 10))
 	exponent = math.Floor(exponent/3) * 3
 
-	value := input / math.Pow(10, exponent)
+	value := mag / math.Pow(10, exponent)
 
 	// Handle special case where value is exactly 1000.0
 	// Should return 1M instead of 1000k
 	if value == 1000.0 {
 		exponent += 3
-		value = input / math.Pow(10, exponent)
+		value = mag / math.Pow(10, exponent)
 	}
 
-	if isNegative {
-		value *= -1
-	}
+	value = math.Copysign(value, input)
 
 	prefix := siPrefixTable[exponent]
 	return value, prefix
