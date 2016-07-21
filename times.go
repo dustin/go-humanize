@@ -81,8 +81,6 @@ func RelTime(a, b time.Time, albl, blbl string) string {
 // In addition to the generic time delta string (e.g. 5 minutes), the
 // labels are used applied so that the label corresponding to the
 // smaller time is applied.
-//
-// RelTime(timeInPast, timeInFuture, "earlier", "later") -> "3 weeks earlier"
 func CustomRelTime(a, b time.Time, albl, blbl string, magnitudes []RelTimeMagnitude) string {
 	lbl := albl
 	diff := b.Sub(a)
