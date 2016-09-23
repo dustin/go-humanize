@@ -109,14 +109,23 @@ func IBytes(s uint64) string {
 // ParseBytes("42mib") -> 44040192, nil
 func ParseBytes(s string) (uint64, error) {
 	lastDigit := 0
+	hasComma := false
 	for _, r := range s {
-		if !(unicode.IsDigit(r) || r == '.') {
+		if !(unicode.IsDigit(r) || r == '.' || r == ',') {
 			break
+		}
+		if r == ',' {
+			hasComma = true
 		}
 		lastDigit++
 	}
 
-	f, err := strconv.ParseFloat(s[:lastDigit], 64)
+	num := s[:lastDigit]
+	if hasComma {
+		num = strings.Replace(num, ",", "", -1)
+	}
+
+	f, err := strconv.ParseFloat(num, 64)
 	if err != nil {
 		return 0, err
 	}

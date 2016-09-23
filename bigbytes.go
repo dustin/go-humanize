@@ -138,15 +138,24 @@ func BigIBytes(s *big.Int) string {
 // ParseBigBytes("42mib") -> 44040192, nil
 func ParseBigBytes(s string) (*big.Int, error) {
 	lastDigit := 0
+	hasComma := false
 	for _, r := range s {
-		if !(unicode.IsDigit(r) || r == '.') {
+		if !(unicode.IsDigit(r) || r == '.' || r == ',') {
 			break
+		}
+		if r == ',' {
+			hasComma = true
 		}
 		lastDigit++
 	}
 
+	num := s[:lastDigit]
+	if hasComma {
+		num = strings.Replace(num, ",", "", -1)
+	}
+
 	val := &big.Rat{}
-	_, err := fmt.Sscanf(s[:lastDigit], "%f", val)
+	_, err := fmt.Sscanf(num, "%f", val)
 	if err != nil {
 		return nil, err
 	}

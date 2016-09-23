@@ -39,6 +39,8 @@ func TestByteParsing(t *testing.T) {
 		{"42.5Mi", 44564480},
 		{"42.5 M", 42500000},
 		{"42.5 Mi", 44564480},
+		// Bug #42
+		{"1,005.03 MB", 1005030000},
 		// Large testing, breaks when too much larger than
 		// this.
 		{"12.5 EB", uint64(12.5 * float64(EByte))},
