@@ -71,3 +71,43 @@ func TestRange(t *testing.T) {
 		t.Errorf("Expected a long while from now, got %q", x)
 	}
 }
+
+func TestCustomRelTime(t *testing.T) {
+	now := time.Now().Add(time.Millisecond * 250)
+	magnitudes := []RelTimeMagnitude{
+		{time.Second, "now", time.Second},
+		{2 * time.Second, "1 second %s", 1},
+		{time.Minute, "%d seconds %s", time.Second},
+		{Day - time.Second, "%d minutes %s", time.Minute},
+		{Day, "%d hours %s", time.Hour},
+		{2 * Day, "1 day %s", 1},
+		{Week, "%d days %s", Day},
+		{2 * Week, "1 week %s", 1},
+		{6 * Month, "%d weeks %s", Week},
+		{Year, "%d months %s", Month},
+	}
+	customRelTime := func(then time.Time) string {
+		return CustomRelTime(then, time.Now(), "ago", "from now", magnitudes)
+	}
+	testList{
+		{"now", customRelTime(now), "now"},
+		{"1 second from now", customRelTime(now.Add(+1 * time.Second)), "1 second from now"},
+		{"12 seconds from now", customRelTime(now.Add(+12 * time.Second)), "12 seconds from now"},
+		{"30 seconds from now", customRelTime(now.Add(+30 * time.Second)), "30 seconds from now"},
+		{"45 seconds from now", customRelTime(now.Add(+45 * time.Second)), "45 seconds from now"},
+		{"15 minutes from now", customRelTime(now.Add(+15 * time.Minute)), "15 minutes from now"},
+		{"2 hours from now", customRelTime(now.Add(+2 * time.Hour)), "120 minutes from now"},
+		{"21 hours from now", customRelTime(now.Add(+21 * time.Hour)), "1260 minutes from now"},
+		{"1 day from now", customRelTime(now.Add(+26 * time.Hour)), "1 day from now"},
+		{"2 days from now", customRelTime(now.Add(+49 * time.Hour)), "2 days from now"},
+		{"3 days from now", customRelTime(now.Add(+3 * Day)), "3 days from now"},
+		{"1 week from now (1)", customRelTime(now.Add(+7 * Day)), "1 week from now"},
+		{"1 week from now (2)", customRelTime(now.Add(+12 * Day)), "1 week from now"},
+		{"2 weeks from now", customRelTime(now.Add(+15 * Day)), "2 weeks from now"},
+		{"1 month from now", customRelTime(now.Add(+30 * Day)), "4 weeks from now"},
+		{"6 months from now", customRelTime(now.Add(+6*Month - time.Second)), "25 weeks from now"},
+		{"1 year from now", customRelTime(now.Add(+365 * Day)), "12 months from now"},
+		{"2 years from now", customRelTime(now.Add(+2 * Year)), "24 months from now"},
+		{"a while from now", customRelTime(now.Add(+LongTime)), "444 months from now"},
+	}.validate(t)
+}
