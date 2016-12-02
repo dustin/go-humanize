@@ -90,13 +90,12 @@ func CustomRelTime(a, b time.Time, albl, blbl string, magnitudes []RelTimeMagnit
 		diff = a.Sub(b)
 	}
 
-	lenMag := len(magnitudes)
-	n := sort.Search(lenMag, func(i int) bool {
+	n := sort.Search(len(magnitudes), func(i int) bool {
 		return magnitudes[i].D >= diff
 	})
 
-	if n >= lenMag {
-		n = lenMag - 1
+	if n >= len(magnitudes) {
+		n = len(magnitudes) - 1
 	}
 	mag := magnitudes[n]
 	args := []interface{}{}
