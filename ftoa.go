@@ -1,6 +1,6 @@
 package humanize
 
-import "strconv"
+import "fmt"
 
 func stripTrailingZeros(s string) string {
 	offset := len(s) - 1
@@ -18,6 +18,7 @@ func stripTrailingZeros(s string) string {
 }
 
 // Ftoa converts a float to a string with no trailing zeros.
-func Ftoa(num float64) string {
-	return stripTrailingZeros(strconv.FormatFloat(num, 'f', 6, 64))
+func Ftoa(num float64, offset int) string {
+	f := fmt.Sprintf("%%.%df", offset)
+	return stripTrailingZeros(fmt.Sprintf(f, num))
 }

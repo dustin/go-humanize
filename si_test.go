@@ -64,7 +64,7 @@ func TestSI(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		got := SI(test.num, "F")
+		got := SI(test.num, 10, "F")
 		if got != test.formatted {
 			t.Errorf("On %v (%v), got %v, wanted %v",
 				test.name, test.num, got, test.formatted)
