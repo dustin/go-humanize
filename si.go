@@ -27,13 +27,21 @@ var siPrefixTable = map[float64]string{
 	24:  "Y", // yotta
 }
 
-var revSIPrefixTable = revfmap(siPrefixTable)
+var siPrefixAliasTable = map[string]string{
+	"K": "k",
+	"u": "µ",
+}
+
+var revSIPrefixTable = revfmap(siPrefixTable, siPrefixAliasTable)
 
 // revfmap reverses the map and precomputes the power multiplier
-func revfmap(in map[float64]string) map[string]float64 {
+func revfmap(in map[float64]string, aliases map[string]string) map[string]float64 {
 	rv := map[string]float64{}
 	for k, v := range in {
 		rv[v] = math.Pow(10, k)
+	}
+	for alt, real := range aliases {
+		rv[alt] = rv[real]
 	}
 	return rv
 }
@@ -42,8 +50,8 @@ var riParseRegex *regexp.Regexp
 
 func init() {
 	ri := `^([\-0-9.]+)\s?([`
-	for _, v := range siPrefixTable {
-		ri += v
+	for k := range revSIPrefixTable {
+		ri += k
 	}
 	ri += `]?)(.*)`
 
