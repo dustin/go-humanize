@@ -87,10 +87,37 @@ func TestSI(t *testing.T) {
 		}
 	}
 
-	// Parse error
-	gotf, gotu, err := ParseSI("x1.21JW") // 1.21 jigga whats
-	if err == nil {
-		t.Errorf("Expected error on x1.21JW, got %v %v", gotf, gotu)
+}
+
+func TestParseSI(t *testing.T) {
+	tests := []struct {
+		input    string
+		num      float64
+		unit     string
+		hasError bool
+	}{
+		{"1.21kW", 1210.0, "W", false},
+		{"1.21 kW", 1210.0, "W", false},
+		{"1.21 KW", 1210.0, "W", false},
+		{"1.21µW", 1.21e-6, "W", false},
+		{"1.21uW", 1.21e-6, "W", false},
+		{"1.21 uW", 1.21e-6, "W", false},
+		{"x1.21JW", 0, "", true},
+	}
+
+	for _, test := range tests {
+		gotf, gotu, err := ParseSI(test.input)
+		if test.hasError && err == nil {
+			t.Errorf("Expected error on %s, got %v %v", test.input, gotf, gotu)
+		}
+		if math.Abs(1-(gotf/test.num)) > 0.01 {
+			t.Errorf("On %v got %v, wanted %v (±%v)",
+				test.input, gotf, test.num,
+				math.Abs(1-(gotf/test.num)))
+		}
+		if gotu != test.unit {
+			t.Errorf("On %v expected %v got %v", test.input, test.unit, gotu)
+		}
 	}
 }
 
