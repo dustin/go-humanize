@@ -49,7 +49,7 @@ func revfmap(in map[float64]string, aliases map[string]string) map[string]float6
 var riParseRegex *regexp.Regexp
 
 func init() {
-	ri := `^([\-0-9.]+)\s?([`
+	ri := `^([\-0-9.eE]+)\s?([`
 	for k := range revSIPrefixTable {
 		ri += k
 	}

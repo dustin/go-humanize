@@ -102,6 +102,17 @@ func TestParseSI(t *testing.T) {
 		{"1.21µW", 1.21e-6, "W", false},
 		{"1.21uW", 1.21e-6, "W", false},
 		{"1.21 uW", 1.21e-6, "W", false},
+		{"6.8e-3 W", 6.8e-3, "W", false},
+		{"6.8E-3 W", 6.8e-3, "W", false},
+		{"6.8e-3W", 6.8e-3, "W", false},
+		{"-6.8e-3W", -6.8e-3, "W", false},
+		{"-6.8e-3 W", -6.8e-3, "W", false},
+		{"-6.8e-3 kW", -6.8, "W", false},
+		{"1000", 1000, "", false},
+		{"1000W", 1000, "W", false},
+		{"0W", 0, "W", false},
+		{"0.6 pF", 6e-13, "F", false},
+		{"100pF", 1e-10, "F", false},
 		{"x1.21JW", 0, "", true},
 	}
 
@@ -109,6 +120,9 @@ func TestParseSI(t *testing.T) {
 		gotf, gotu, err := ParseSI(test.input)
 		if test.hasError && err == nil {
 			t.Errorf("Expected error on %s, got %v %v", test.input, gotf, gotu)
+		}
+		if !test.hasError && err != nil {
+			t.Errorf("Expected no error on %s, got error %v", test.input, err)
 		}
 		if math.Abs(1-(gotf/test.num)) > 0.01 {
 			t.Errorf("On %v got %v, wanted %v (±%v)",
