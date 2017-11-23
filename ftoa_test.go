@@ -17,6 +17,15 @@ func TestFtoa(t *testing.T) {
 	}.validate(t)
 }
 
+func TestFtoaWithDigits(t *testing.T) {
+	testList{
+		{"1.23, 0", FtoaWithDigits(1.23, 0), "1"},
+		{"1.23, 1", FtoaWithDigits(1.23, 1), "1.2"},
+		{"1.23, 2", FtoaWithDigits(1.23, 2), "1.23"},
+		{"1.23, 3", FtoaWithDigits(1.23, 3), "1.23"},
+	}.validate(t)
+}
+
 func BenchmarkFtoaRegexTrailing(b *testing.B) {
 	trailingZerosRegex := regexp.MustCompile(`\.?0+$`)
 
