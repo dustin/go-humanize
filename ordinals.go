@@ -22,4 +22,5 @@ func Ordinal(x int) string {
 		}
 	}
 	return strconv.Itoa(x) + suffix
+
 }
