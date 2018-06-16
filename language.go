@@ -57,6 +57,16 @@ const (
 var active = Uninitialized
 var ruleset = Ruleset{}
 
+// ValidateLanguage for output
+// Must be called before Time or Ordinal function
+// If implemented to other functions, call it for not getting
+// an error. This function automatically chooses language to English.
+func ValidateLanguage() {
+	if active == Uninitialized {
+		SetLanguage(English)
+	}
+}
+
 // GetLanguage of the humanizing option.
 func GetLanguage() Local {
 	return active

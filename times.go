@@ -20,9 +20,7 @@ const (
 //
 // Time(someT) -> "3 weeks ago"
 func Time(then time.Time) string {
-	if GetLanguage() == Uninitialized {
-		SetLanguage(English)
-	}
+	ValidateLanguage()
 	return RelTime(
 		then,
 		time.Now(),

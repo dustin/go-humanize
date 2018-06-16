@@ -9,9 +9,7 @@ import (
 //
 // Ordinal(3) -> 3rd
 func Ordinal(x int) (out string) {
-	if GetLanguage() == Uninitialized {
-		SetLanguage(English)
-	}
+	ValidateLanguage()
 
 	ordinals := GetRuleset().Ords
 
