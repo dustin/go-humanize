@@ -4,6 +4,8 @@ package english
 import (
 	"fmt"
 	"strings"
+
+	humanize "github.com/dustin/go-humanize"
 )
 
 // These are included because they are common technical terms.
@@ -61,7 +63,7 @@ func PluralWord(quantity int, singular, plural string) string {
 // The simple English rules of regular pluralization will be used
 // if the plural form is an empty string (i.e. not explicitly given).
 func Plural(quantity int, singular, plural string) string {
-	return fmt.Sprintf("%d %s", quantity, PluralWord(quantity, singular, plural))
+	return fmt.Sprintf("%s %s", humanize.Comma(int64(quantity)), PluralWord(quantity, singular, plural))
 }
 
 // WordSeries converts a list of words into a word series in English.
