@@ -31,6 +31,11 @@ const (
 	EByte = PByte * 1000
 )
 
+var (
+	nameSizes  = []string{"B", "kB", "MB", "GB", "TB", "PB", "EB"}
+	iNameSizes = []string{"B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"}
+)
+
 var bytesSizeTable = map[string]uint64{
 	"b":   Byte,
 	"kib": KiByte,
@@ -65,19 +70,45 @@ func logn(n, b float64) float64 {
 	return math.Log(n) / math.Log(b)
 }
 
-func humanateBytes(s uint64, base float64, sizes []string) string {
+func floor(val float64) string {
+	f := "%.1f"
+	if val < 10 {
+		f = "%.3f"
+	}
+	res := fmt.Sprintf(f, val)
+	if len(res) > 3 {
+		res = res[:len(res)-2]
+	}
+	// if strings.Contains(res, ".0") && res[len(res)-1] == '0' {
+	// 	res = res[:len(res)-2]
+	// }
+	return res
+}
+
+func ceil(val float64) string {
+	f := "%.0f"
+	if val < 10 {
+		f = "%.1f"
+	}
+	return fmt.Sprintf(f, val)
+
+}
+
+func humanateBytes(s uint64, base float64, sizes []string, floorFlag bool) string {
 	if s < 10 {
 		return fmt.Sprintf("%d B", s)
 	}
 	e := math.Floor(logn(float64(s), base))
 	suffix := sizes[int(e)]
 	val := math.Floor(float64(s)/math.Pow(base, e)*10+0.5) / 10
-	f := "%.0f %s"
-	if val < 10 {
-		f = "%.1f %s"
+	var roundVal string
+	if floorFlag {
+		roundVal = floor(val)
+	} else {
+		roundVal = ceil(val)
 	}
 
-	return fmt.Sprintf(f, val, suffix)
+	return fmt.Sprintf("%s %s", roundVal, suffix)
 }
 
 // Bytes produces a human readable representation of an SI size.
@@ -86,8 +117,11 @@ func humanateBytes(s uint64, base float64, sizes []string) string {
 //
 // Bytes(82854982) -> 83 MB
 func Bytes(s uint64) string {
-	sizes := []string{"B", "kB", "MB", "GB", "TB", "PB", "EB"}
-	return humanateBytes(s, 1000, sizes)
+	return humanateBytes(s, 1000, nameSizes, false)
+}
+
+func BytesFloor(s uint64) string {
+	return humanateBytes(s, 1000, nameSizes, true)
 }
 
 // IBytes produces a human readable representation of an IEC size.
@@ -96,8 +130,11 @@ func Bytes(s uint64) string {
 //
 // IBytes(82854982) -> 79 MiB
 func IBytes(s uint64) string {
-	sizes := []string{"B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"}
-	return humanateBytes(s, 1024, sizes)
+	return humanateBytes(s, 1024, iNameSizes, false)
+}
+
+func IBytesFloor(s uint64) string {
+	return humanateBytes(s, 1024, iNameSizes, true)
 }
 
 // ParseBytes parses a string representation of bytes into the number
