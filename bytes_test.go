@@ -134,69 +134,73 @@ func TestBytes(t *testing.T) {
 	}.validate(t)
 }
 
-func TestBytesFloor(t *testing.T) {
+func TestBytesCustomFloor(t *testing.T) {
 	testList{
-		{"bytes(0)", BytesFloor(0), "0 B"},
-		{"bytes(1)", BytesFloor(1), "1 B"},
-		{"bytes(803)", BytesFloor(803), "803 B"},
-		{"bytes(999)", BytesFloor(999), "999 B"},
+		{"bytes(0) with precision(2) ", BytesCustomFloor(0, 2), "0 B"},
+		{"bytes(1) with precision(2)", BytesCustomFloor(1, 2), "1 B"},
+		{"bytes(803) with precision(2)", BytesCustomFloor(803, 2), "803 B"},
+		{"bytes(999) with precision(2)", BytesCustomFloor(999, 2), "999 B"},
 
-		{"bytes(1)", BytesFloor(1), "1 B"},
-		{"bytes(803)", BytesFloor(803), "803 B"},
-		{"bytes(999)", BytesFloor(999), "999 B"},
+		{"bytes(1) with precision(2)", BytesCustomFloor(1, 2), "1 B"},
+		{"bytes(803) with precision(2)", BytesCustomFloor(803, 2), "803 B"},
+		{"bytes(999) with precision(2)", BytesCustomFloor(999, 2), "999 B"},
 
-		{"bytes(1024)", BytesFloor(1024), "1.0 kB"},
-		{"bytes(9999)", BytesFloor(9999), "10 kB"},
-		{"bytes(1MB - 1)", BytesFloor(MByte - Byte), "1000 kB"},
+		{"bytes(1024) with precision(2)", BytesCustomFloor(1024, 2), "1.02 kB"},
+		{"bytes(9999) with precision(2)", BytesCustomFloor(9999, 2), "9.99 kB"},
+		{"bytes(1MB - 1) with precision(2)", BytesCustomFloor(MByte-Byte, 2), "999.99 kB"},
 
-		{"bytes(1MB)", BytesFloor(1024 * 1024), "1.0 MB"},
-		{"bytes(1GB - 1K)", BytesFloor(GByte - KByte), "1000 MB"},
+		{"bytes(1MB) with precision(2)", BytesCustomFloor(1024*1024, 2), "1.04 MB"},
+		{"bytes(1GB - 1K) with precision(2)", BytesCustomFloor(GByte-KByte, 2), "999.99 MB"},
 
-		{"bytes(1GB)", BytesFloor(GByte), "1.0 GB"},
-		{"bytes(1TB - 1M)", BytesFloor(TByte - MByte), "1000 GB"},
-		{"bytes(10MB)", BytesFloor(9999 * 1000), "10 MB"},
+		{"bytes(1GB) with precision(2)", BytesCustomFloor(GByte, 2), "1 GB"},
+		{"bytes(1TB - 1M) with precision(2)", BytesCustomFloor(TByte-MByte, 2), "999.99 GB"},
+		{"bytes(10MB) with precision(2)", BytesCustomFloor(9999*1000, 2), "9.99 MB"},
 
-		{"bytes(1TB)", BytesFloor(TByte), "1.0 TB"},
-		{"bytes(1PB - 1T)", BytesFloor(PByte - TByte), "999 TB"},
+		{"bytes(1TB) with precision(2)", BytesCustomFloor(TByte, 2), "1 TB"},
+		{"bytes(1PB - 1T) with precision(2)", BytesCustomFloor(PByte-TByte, 2), "999 TB"},
 
-		{"bytes(1PB)", BytesFloor(PByte), "1.0 PB"},
-		{"bytes(1PB - 1T)", BytesFloor(EByte - PByte), "999 PB"},
+		{"bytes(1PB) with precision(2)", BytesCustomFloor(PByte, 2), "1 PB"},
+		{"bytes(1PB - 1T) with precision(2)", BytesCustomFloor(EByte-PByte, 2), "999 PB"},
 
-		{"bytes(1EB)", BytesFloor(EByte), "1.0 EB"},
+		{"bytes(1EB) with precision(2)", BytesCustomFloor(EByte, 2), "1 EB"},
 
-		{"bytes(92160871366656)", BytesFloor(92160871366656), "92 TB"},
-		// Overflows.
-		// {"bytes(1EB - 1P)", BytesFloor((KByte*EByte)-PByte), "1023EB"},
+		{"bytes(92160871366656) with precision(2)", BytesCustomFloor(92160871366656, 2), "92.16 TB"},
+		{"bytes(92160871366656) with precision(10)", BytesCustomFloor(92160871366656, 10), "92.1608713666 TB"},
+		{"bytes(92160871366656) with precision(3)", BytesCustomFloor(92160866656, 3), "92.16 GB"},
+		{"bytes(92160871366656) with precision(2)", BytesCustomFloor(92160866656, 2), "92.16 GB"},
+		{"bytes(92160871366656) with precision(0)", BytesCustomFloor(102160871366656, 0), "102 TB"},
+		{"bytes(92160871366656) with precision(20)", BytesCustomFloor(102160871366656, 20), "102.16087136665599643948 TB"},
 
-		{"bytes(0)", IBytesFloor(0), "0 B"},
-		{"bytes(1)", IBytesFloor(1), "1 B"},
-		{"bytes(803)", IBytesFloor(803), "803 B"},
-		{"bytes(1023)", IBytesFloor(1023), "1023 B"},
+		{"bytes(0) with precision(2)", IBytesCustomFloor(0, 2), "0 B"},
+		{"bytes(1) with precision(2)", IBytesCustomFloor(1, 2), "1 B"},
+		{"bytes(803) with precision(2)", IBytesCustomFloor(803, 2), "803 B"},
+		{"bytes(1023) with precision(2)", IBytesCustomFloor(1023, 2), "1023 B"},
 
-		{"bytes(1024)", IBytesFloor(1024), "1.0 KiB"},
-		{"bytes(1MB - 1)", IBytesFloor(MiByte - IByte), "1024 KiB"},
+		{"bytes(1024) with precision(2)", IBytesCustomFloor(1024, 2), "1 KiB"},
+		{"bytes(1MB - 1) with precision(2)", IBytesCustomFloor(MiByte-IByte, 2), "1023.99 KiB"},
 
-		{"bytes(1MB)", IBytesFloor(1024 * 1024), "1.0 MiB"},
-		{"bytes(1GB - 1K)", IBytesFloor(GiByte - KiByte), "1024 MiB"},
+		{"bytes(1MB) with precision(2)", IBytesCustomFloor(1024*1024, 2), "1 MiB"},
+		{"bytes(1GB - 1K) with precision(2)", IBytesCustomFloor(GiByte-KiByte, 2), "1023.99 MiB"},
 
-		{"bytes(1GB)", IBytesFloor(GiByte), "1.0 GiB"},
-		{"bytes(1TB - 1M)", IBytesFloor(TiByte - MiByte), "1024 GiB"},
+		{"bytes(1GB) with precision(2)", IBytesCustomFloor(GiByte, 2), "1 GiB"},
+		{"bytes(1TB - 1M) with precision(2)", IBytesCustomFloor(TiByte-MiByte, 2), "1023.99 GiB"},
 
-		{"bytes(1TB)", IBytesFloor(TiByte), "1.0 TiB"},
-		{"bytes(1PB - 1T)", IBytesFloor(PiByte - TiByte), "1023 TiB"},
+		{"bytes(1TB) with precision(2)", IBytesCustomFloor(TiByte, 2), "1 TiB"},
+		{"bytes(1PB - 1T) with precision(2)", IBytesCustomFloor(PiByte-TiByte, 2), "1023 TiB"},
 
-		{"bytes(1PB)", IBytesFloor(PiByte), "1.0 PiB"},
-		{"bytes(1PB - 1T)", IBytesFloor(EiByte - PiByte), "1023 PiB"},
+		{"bytes(1PB) with precision(2)", IBytesCustomFloor(PiByte, 2), "1 PiB"},
+		{"bytes(1PB - 1T) with precision(2)", IBytesCustomFloor(EiByte-PiByte, 2), "1023 PiB"},
 
-		{"bytes(1EiB)", IBytesFloor(EiByte), "1.0 EiB"},
-		// Overflows.
-		// {"bytes(1EB - 1P)", IBytesFloor((KIByte*EIByte)-PiByte), "1023EB"},
+		{"bytes(1EiB) with precision(1)", IBytesCustomFloor(EiByte, 1), "1 EiB"},
 
-		{"bytes(5.5GiB)", IBytesFloor(5.5 * GiByte), "5.5 GiB"},
+		{"bytes(5.5GiB) with precision(3)", IBytesCustomFloor(5.5*GiByte, 3), "5.5 GiB"},
 
-		{"bytes(5.5GB)", BytesFloor(5.5 * GByte), "5.5 GB"},
-
-		{"bytes(92160871366656)", IBytesFloor(92160871366656), "83 TiB"},
+		{"bytes(92160871366656) with precision(2)", IBytesCustomFloor(92160871366656, 2), "83.81 TiB"},
+		{"bytes(92160871366656) with precision(10)", IBytesCustomFloor(92160871366656, 10), "83.8198242187 TiB"},
+		{"bytes(92160871366656) with precision(3)", IBytesCustomFloor(92160866656, 3), "85.831 GiB"},
+		{"bytes(92160871366656) with precision(2)", IBytesCustomFloor(92160866656, 2), "85.83 GiB"},
+		{"bytes(92160871366656) with precision(0)", IBytesCustomFloor(102160871366656, 0), "92 TiB"},
+		{"bytes(92160871366656) with precision(20)", IBytesCustomFloor(102160871366656, 20), "92.91477123647928237915 TiB"},
 	}.validate(t)
 }
 
