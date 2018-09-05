@@ -67,7 +67,7 @@ func TestByteErrors(t *testing.T) {
 	}
 	got, err = ParseBytes("")
 	if err == nil {
-		t.Errorf("Expected error parsing nothing")
+		t.Errorf("Expected error parsing nothing, got %v", got)
 	}
 	got, err = ParseBytes("16 EiB")
 	if err == nil {
