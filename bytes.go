@@ -95,12 +95,14 @@ func humanateBytes(s uint64, base float64, sizes []string, precision int, specRo
 	e := math.Floor(logn(float64(s), base))
 	suffix := sizes[int(e)]
 
-	//var addlNumber float64
-	//if !floorFlag {
-	//	addlNumber = 0.5
-	//}
+	var addlNumber float64
+	if specRoundFunc == nil {
+		specRoundFunc = math.Floor
+		addlNumber = 0.5
+	}
 
-	val := specRoundFunc(float64(s)/math.Pow(base, e)*math.Pow(10, float64(precision))) / math.Pow(10, float64(precision))
+	val := specRoundFunc(float64(s)/math.Pow(base, e)*math.Pow(10, float64(precision))+addlNumber) / math.Pow(10, float64(precision))
+
 	var roundVal string
 	if precision > 1 {
 		roundVal = precisionSprint(val, precision)
@@ -117,7 +119,7 @@ func humanateBytes(s uint64, base float64, sizes []string, precision int, specRo
 //
 // Bytes(82854982) -> 83 MB
 func Bytes(s uint64) string {
-	return humanateBytes(s, 1000, nameSizes, 1, math.Round)
+	return humanateBytes(s, 1000, nameSizes, 1, nil)
 }
 
 // BytesCustomFloor allow to set precision and to get less or equal value with rounding
@@ -140,7 +142,7 @@ func BytesCustomCeil(s uint64, precision int) string {
 //
 // IBytes(82854982) -> 79 MiB
 func IBytes(s uint64) string {
-	return humanateBytes(s, 1024, iNameSizes, 1, math.Round)
+	return humanateBytes(s, 1024, iNameSizes, 1, nil)
 }
 
 // IBytesCustomFloor allow to set precision and to get less or equal value with rounding
