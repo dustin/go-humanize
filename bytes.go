@@ -88,21 +88,21 @@ func simpleSprint(val float64) string {
 	return fmt.Sprintf(f, val)
 }
 
-func humanateBytes(s uint64, base float64, sizes []string, precision int, floorFlag bool) string {
+func humanateBytes(s uint64, base float64, sizes []string, precision int, specRoundFunc func (float64) float64) string {
 	if s < 10 {
 		return fmt.Sprintf("%d B", s)
 	}
 	e := math.Floor(logn(float64(s), base))
 	suffix := sizes[int(e)]
 
-	var addlNumber float64
-	if !floorFlag {
-		addlNumber = 0.5
-	}
+	//var addlNumber float64
+	//if !floorFlag {
+	//	addlNumber = 0.5
+	//}
 
-	val := math.Floor(float64(s)/math.Pow(base, e)*math.Pow(10, float64(precision))+addlNumber) / math.Pow(10, float64(precision))
+	val := specRoundFunc(float64(s)/math.Pow(base, e)*math.Pow(10, float64(precision))) / math.Pow(10, float64(precision))
 	var roundVal string
-	if floorFlag {
+	if precision > 1 {
 		roundVal = precisionSprint(val, precision)
 	} else {
 		roundVal = simpleSprint(val)
@@ -117,14 +117,21 @@ func humanateBytes(s uint64, base float64, sizes []string, precision int, floorF
 //
 // Bytes(82854982) -> 83 MB
 func Bytes(s uint64) string {
-	return humanateBytes(s, 1000, nameSizes, 1, false)
+	return humanateBytes(s, 1000, nameSizes, 1, math.Round)
 }
 
 // BytesCustomFloor allow to set precision and to get less or equal value with rounding
 //
 // BytesCustomFloor(92160871366656, 2) -> 92.16 TB
 func BytesCustomFloor(s uint64, precision int) string {
-	return humanateBytes(s, 1000, nameSizes, precision, true)
+	return humanateBytes(s, 1000, nameSizes, precision, math.Floor)
+}
+
+// BytesCustomCeil allow to set precision and to get more or equal value with rounding
+//
+// BytesCustomCeil(92160871366656, 2) -> 92.17 TB
+func BytesCustomCeil(s uint64, precision int) string {
+	return humanateBytes(s, 1000, nameSizes, precision, math.Ceil)
 }
 
 // IBytes produces a human readable representation of an IEC size.
@@ -133,7 +140,7 @@ func BytesCustomFloor(s uint64, precision int) string {
 //
 // IBytes(82854982) -> 79 MiB
 func IBytes(s uint64) string {
-	return humanateBytes(s, 1024, iNameSizes, 1, false)
+	return humanateBytes(s, 1024, iNameSizes, 1, math.Round)
 }
 
 // IBytesCustomFloor allow to set precision and to get less or equal value with rounding
@@ -141,7 +148,14 @@ func IBytes(s uint64) string {
 // IBytesCustomFloor(92160871366656, 2) -> 83.81 TiB
 // IBytesCustomFloor(92160871366656, 3) -> 83.8198242187
 func IBytesCustomFloor(s uint64, precision int) string {
-	return humanateBytes(s, 1024, iNameSizes, precision, true)
+	return humanateBytes(s, 1024, iNameSizes, precision, math.Floor)
+}
+
+// IBytesCustomCeil allow to set precision and to get more or equal value with rounding
+//
+// IBytesCustomCeil(92160871366656, 2) -> 83.82 TiB
+func IBytesCustomCeil(s uint64, precision int) string {
+	return humanateBytes(s, 1024, iNameSizes, precision, math.Ceil)
 }
 
 // ParseBytes parses a string representation of bytes into the number
