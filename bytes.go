@@ -88,7 +88,7 @@ func simpleSprint(val float64) string {
 	return fmt.Sprintf(f, val)
 }
 
-func humanateBytes(s uint64, base float64, sizes []string, precision int, specRoundFunc func (float64) float64) string {
+func humanateBytes(s uint64, base float64, sizes []string, precision int, specRoundFunc func(float64) float64) string {
 	if s < 10 {
 		return fmt.Sprintf("%d B", s)
 	}
