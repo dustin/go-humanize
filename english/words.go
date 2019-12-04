@@ -27,7 +27,7 @@ var isVowel = map[byte]bool{
 // if the plural form is an empty string (i.e. not explicitly given).
 // The special cases are not guaranteed to work for strings outside ASCII.
 func PluralWord(quantity int, singular, plural string) string {
-	if quantity == 1 {
+	if quantity == 1 || quantity == 0 {
 		return singular
 	}
 	if plural != "" {

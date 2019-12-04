@@ -10,7 +10,7 @@ func TestPluralWord(t *testing.T) {
 		singular, plural string
 		want             string
 	}{
-		{0, "object", "", "objects"},
+		{0, "object", "", "object"},
 		{1, "object", "", "object"},
 		{-1, "object", "", "objects"},
 		{42, "object", "", "objects"},
@@ -45,6 +45,7 @@ func TestPlural(t *testing.T) {
 		singular, plural string
 		want             string
 	}{
+		{0, "object", "", "0 object"},
 		{1, "object", "", "1 object"},
 		{42, "object", "", "42 objects"},
 		{1234567, "object", "", "1,234,567 objects"},
