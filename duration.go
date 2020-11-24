@@ -27,7 +27,7 @@ func Duration(format string, d time.Duration) string {
 	process := func(f string, unit time.Duration, name string) {
 		if strings.Contains(format, f) {
 			segment := int(d / unit)
-			format = strings.ReplaceAll(format, f, pluralize(segment, name))
+			format = strings.Replace(format, f, pluralize(segment, name), -1)
 			d %= unit
 		}
 	}
@@ -42,7 +42,7 @@ func Duration(format string, d time.Duration) string {
 
 	// cleanup spaces
 	format = strings.Trim(format, " ")
-	return strings.ReplaceAll(format, "  ", " ")
+	return strings.Replace(format, "  ", " ", -1)
 }
 
 func pluralize(i int, s string) string {
