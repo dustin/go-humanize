@@ -24,6 +24,10 @@ func Duration(format string, d time.Duration) string {
 	if format == "" {
 		format = "%y %m %w %d %H %M %S"
 	}
+	if d < 0 {
+		format = "-" + format
+		d *= -1
+	}
 	process := func(f string, unit time.Duration, name string) {
 		if strings.Contains(format, f) {
 			segment := int(d / unit)

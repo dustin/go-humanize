@@ -17,10 +17,25 @@ func TestDuration(t *testing.T) {
 			d:        400*Day + 12*time.Hour + 17*time.Second,
 			expected: "1 year 1 month 5 days 12 hours 17 seconds",
 		},
+		"negative": {
+			format:   "%y %m %w %d %H %M %S",
+			d:        -(400*Day + 12*time.Hour + 17*time.Second),
+			expected: "-1 year 1 month 5 days 12 hours 17 seconds",
+		},
 		"years": {
 			format:   "%y",
 			d:        800 * Day,
 			expected: "2 years",
+		},
+		"zero": {
+			format:   "%y",
+			d:        0,
+			expected: "",
+		},
+		"neg years": {
+			format:   "%y",
+			d:        -800 * Day,
+			expected: "-2 years",
 		},
 		"year + week": {
 			format:   "%y %w",
