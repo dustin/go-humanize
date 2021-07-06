@@ -65,15 +65,20 @@ func logn(n, b float64) float64 {
 	return math.Log(n) / math.Log(b)
 }
 
-func humanateBytes(s uint64, base float64, sizes []string) string {
+func computeBytes(s uint64, base float64, sizes []string) (float64, string) {
 	if s < 10 {
-		return fmt.Sprintf("%d B", s)
+		return float64(s), "B"
 	}
 	e := math.Floor(logn(float64(s), base))
 	suffix := sizes[int(e)]
 	val := math.Floor(float64(s)/math.Pow(base, e)*10+0.5) / 10
+	return val, suffix
+}
+
+func humanateBytes(s uint64, base float64, sizes []string) string {
+	val, suffix := computeBytes(s, base, sizes)
 	f := "%.0f %s"
-	if val < 10 {
+	if val < 10 && suffix != "B" {
 		f = "%.1f %s"
 	}
 
@@ -90,6 +95,18 @@ func Bytes(s uint64) string {
 	return humanateBytes(s, 1000, sizes)
 }
 
+// ComputeBytes finds the most appropriate binary prefix for the given number
+// and returns the prefix along with the value adjusted to be within
+// that prefix.
+//
+// See also: Bytes, ParseBytes.
+//
+// e.g. ComputeBytes(82854982) -> (83, "MiB")
+func ComputeBytes(s uint64) (float64, string) {
+	sizes := []string{"B", "kB", "MB", "GB", "TB", "PB", "EB"}
+	return computeBytes(s, 1000, sizes)
+}
+
 // IBytes produces a human readable representation of an IEC size.
 //
 // See also: ParseBytes.
@@ -98,6 +115,18 @@ func Bytes(s uint64) string {
 func IBytes(s uint64) string {
 	sizes := []string{"B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"}
 	return humanateBytes(s, 1024, sizes)
+}
+
+// ComputeIBytes finds the most appropriate binary prefix for the given number
+// and returns the prefix along with the value adjusted to be within
+// that prefix.
+//
+// See also: IBytes, ParseBytes.
+//
+// e.g. ComputeIBytes(82854982) -> (79, "MiB")
+func ComputeIBytes(s uint64) (float64, string) {
+	sizes := []string{"B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"}
+	return computeBytes(s, 1024, sizes)
 }
 
 // ParseBytes parses a string representation of bytes into the number
