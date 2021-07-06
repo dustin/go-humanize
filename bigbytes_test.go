@@ -66,7 +66,7 @@ func TestBigByteErrors(t *testing.T) {
 	if err == nil {
 		t.Errorf("Expected error, got %v", got)
 	}
-	got, err = ParseBigBytes("")
+	_, err = ParseBigBytes("")
 	if err == nil {
 		t.Errorf("Expected error parsing nothing")
 	}
