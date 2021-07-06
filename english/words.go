@@ -15,7 +15,7 @@ var specialPlurals = map[string]string{
 	"vertex": "vertices",
 }
 
-var sibilantEndings = []string{"s", "sh", "tch", "x"}
+var sibilantEndings = []string{"ch", "s", "sh", "x", "z"}
 
 var isVowel = map[byte]bool{
 	'A': true, 'E': true, 'I': true, 'O': true, 'U': true,
