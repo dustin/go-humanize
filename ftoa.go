@@ -34,6 +34,34 @@ func stripTrailingDigits(s string, digits int) string {
 	return s
 }
 
+func clampTrailingDigits(s string, digits int) string {
+	i := strings.Index(s, ".")
+
+	// short circuit. if there is no decimal separator, add one,
+	// and the appropriate number of zeros
+	if i == -1 {
+		// second short circuit - if they request <= 0 digits, just
+		// return the string, as it already doesn't have any digits.
+		if digits <= 0 {
+			return s
+		}
+		return s + "." + strings.Repeat("0", digits)
+	}
+
+	// third short circuit - if they request <= 0 digits, remove
+	// all digits and dot
+	if digits <= 0 {
+		return s[:i]
+	}
+
+	currentDigitLength := len(s)-i-1
+	if digits <= currentDigitLength {
+		return stripTrailingDigits(s,digits)
+	}
+
+	return s + strings.Repeat("0",digits-currentDigitLength)
+}
+
 // Ftoa converts a float to a string with no trailing zeros.
 func Ftoa(num float64) string {
 	return stripTrailingZeros(strconv.FormatFloat(num, 'f', 6, 64))
