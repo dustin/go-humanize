@@ -4,35 +4,39 @@ import (
 	"fmt"
 )
 
+var (
+	FinanceSign = "$"
+)
+
 func Finance(f float64) string {
 	switch n := f; {
 	case n >= 1_000_000_000_000_000:
 		s := fmt.Sprintf("%.f", f)
 		s = insertAt(1, '.', []rune(s[:4]))
-		return fmt.Sprintf("$%sQ", s)
+		return fmt.Sprintf("%s%sQ", FinanceSign, s)
 
 	case n >= 1_000_000_000_000:
 		s := fmt.Sprintf("%.f", f)
 		s = insertAt(1, '.', []rune(s[:4]))
-		return fmt.Sprintf("$%sT", s)
+		return fmt.Sprintf("%s%sT", FinanceSign, s)
 
 	case n >= 1_000_000_000:
 		s := fmt.Sprintf("%.f", f)
 		s = insertAt(1, '.', []rune(s[:4]))
-		return fmt.Sprintf("$%sB", s)
+		return fmt.Sprintf("%s%sB", FinanceSign, s)
 
 	case n >= 1_000_000:
 		s := fmt.Sprintf("%.f", f)
 		s = insertAt(1, '.', []rune(s[:4]))
-		return fmt.Sprintf("$%sM", s)
+		return fmt.Sprintf("%s%sM", FinanceSign, s)
 
 	case n >= 1_000:
 		s := fmt.Sprintf("%.f", f)
 		s = insertAt(1, '.', []rune(s[:4]))
-		return fmt.Sprintf("$%sK", s)
+		return fmt.Sprintf("%s%sK", FinanceSign, s)
 
 	case n < 1_000:
-		return fmt.Sprintf("$%.f", f)
+		return fmt.Sprintf("%s%.f", FinanceSign, f)
 
 	default:
 		return "NaN"
