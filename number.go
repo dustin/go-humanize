@@ -11,6 +11,7 @@ Source: https://gist.github.com/gorhill/5285193
 import (
 	"math"
 	"strconv"
+	"strings"
 )
 
 var (
@@ -180,6 +181,9 @@ func FormatFloat(format string, n float64) string {
 	// may need padding
 	if len(fracStr) < precision {
 		fracStr = "000000000000000"[:precision-len(fracStr)] + fracStr
+	}
+	if format == "" && n > 0.1 {
+		return strings.TrimRight(strings.TrimRight(signStr+intStr+decimalStr+fracStr, "0"), ".")
 	}
 
 	return signStr + intStr + decimalStr + fracStr
