@@ -13,34 +13,47 @@ import (
 //
 // e.g. Comma(834142) -> 834,142
 func Comma(v int64) string {
-	sign := ""
+	if v&^0b111 == 0 {
+		return string([]byte{byte(v) + 48})
+	}
 
 	// Min int64 can't be negated to a usable value, so it has to be special cased.
 	if v == math.MinInt64 {
 		return "-9,223,372,036,854,775,808"
 	}
+	// Counting the number of digits.
+	var count byte = 0
+	for n := v; n != 0; n = n / 10 {
+		count++
+	}
 
+	count += (count - 1) / 3
 	if v < 0 {
-		sign = "-"
 		v = 0 - v
+		count++
 	}
+	output := make([]byte, count)
+	currentIndex := byte(len(output) - 1)
 
-	parts := []string{"", "", "", "", "", "", ""}
-	j := len(parts) - 1
-
-	for v > 999 {
-		parts[j] = strconv.FormatInt(v%1000, 10)
-		switch len(parts[j]) {
-		case 2:
-			parts[j] = "0" + parts[j]
-		case 1:
-			parts[j] = "00" + parts[j]
+	var counter byte = 0
+	for v > 9 {
+		output[currentIndex] = byte(v%10) + 48
+		v = v / 10
+		currentIndex--
+		if counter == 2 {
+			counter = 0
+			output[currentIndex] = ','
+			currentIndex--
+		} else {
+			counter++
 		}
-		v = v / 1000
-		j--
 	}
-	parts[j] = strconv.Itoa(int(v))
-	return sign + strings.Join(parts[j:], ",")
+
+	output[currentIndex] = byte(v) + 48
+	if currentIndex == 1 {
+		output[0] = '-'
+	}
+	return string(output)
 }
 
 // Commaf produces a string form of the given number in base 10 with
