@@ -33,24 +33,24 @@ func Comma(v int64) string {
 		count++
 	}
 	output := make([]byte, count)
-	currentIndex := byte(len(output) - 1)
+	j := len(output) - 1
 
 	var counter byte = 0
 	for v > 9 {
-		output[currentIndex] = byte(v%10) + 48
+		output[j] = byte(v%10) + 48
 		v = v / 10
-		currentIndex--
+		j--
 		if counter == 2 {
 			counter = 0
-			output[currentIndex] = ','
-			currentIndex--
+			output[j] = ','
+			j--
 		} else {
 			counter++
 		}
 	}
 
-	output[currentIndex] = byte(v) + 48
-	if currentIndex == 1 {
+	output[j] = byte(v) + 48
+	if j == 1 {
 		output[0] = '-'
 	}
 	return string(output)
