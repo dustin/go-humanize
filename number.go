@@ -70,10 +70,10 @@ func FormatFloat(format string, n float64) string {
 	if math.IsNaN(n) {
 		return "NaN"
 	}
-	if n > math.MaxFloat64 {
+	if n == math.Inf(1) {
 		return "Infinity"
 	}
-	if n < -math.MaxFloat64 {
+	if n == math.Inf(-1) {
 		return "-Infinity"
 	}
 
