@@ -11,6 +11,8 @@ func TestSI(t *testing.T) {
 		num       float64
 		formatted string
 	}{
+		{"e-30", 1e-30, "1 qF"},
+		{"e-27", 1e-27, "1 rF"},
 		{"e-24", 1e-24, "1 yF"},
 		{"e-21", 1e-21, "1 zF"},
 		{"e-18", 1e-18, "1 aF"},
@@ -54,6 +56,8 @@ func TestSI(t *testing.T) {
 		{"e+18", 2.2e+18, "2.2 EF"},
 		{"e+21", 2.2e+21, "2.2 ZF"},
 		{"e+24", 2.2e+24, "2.2 YF"},
+		{"e+27", 2.2e+27, "2.2 RF"},
+		{"e+30", 2.2e+30, "2.2 QF"},
 
 		// special case
 		{"1F", 1000 * 1000, "1 MF"},
