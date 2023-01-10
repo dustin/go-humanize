@@ -126,3 +126,20 @@ func BenchmarkParseSI(b *testing.B) {
 		ParseSI("2.2346ZB")
 	}
 }
+
+// There was a report that zeroes were being truncated incorrectly
+func TestBug106(t *testing.T) {
+	tests := []struct{
+		in float64
+		want string
+	}{
+		{20.0, "20 U"},
+		{200.0, "200 U"},
+	}
+
+	for _, test := range tests {
+		if got :=SIWithDigits(test.in, 0, "U") ;  got != test.want {
+			t.Errorf("on %f got %v, want %v", test.in, got, test.want);
+		}
+	}
+}

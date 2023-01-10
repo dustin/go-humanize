@@ -14,6 +14,7 @@ import (
 func TestFtoa(t *testing.T) {
 	testList{
 		{"200", Ftoa(200), "200"},
+		{"20", Ftoa(20.0), "20"},
 		{"2", Ftoa(2), "2"},
 		{"2.2", Ftoa(2.2), "2.2"},
 		{"2.02", Ftoa(2.02), "2.02"},
@@ -24,6 +25,7 @@ func TestFtoa(t *testing.T) {
 func TestFtoaWithDigits(t *testing.T) {
 	testList{
 		{"1.23, 0", FtoaWithDigits(1.23, 0), "1"},
+		{"20, 0", FtoaWithDigits(20.0, 0), "20"},
 		{"1.23, 1", FtoaWithDigits(1.23, 1), "1.2"},
 		{"1.23, 2", FtoaWithDigits(1.23, 2), "1.23"},
 		{"1.23, 3", FtoaWithDigits(1.23, 3), "1.23"},
