@@ -161,12 +161,12 @@ func TestVeryBigBytes(t *testing.T) {
 func TestVeryVeryBigBytes(t *testing.T) {
 	b, _ := (&big.Int{}).SetString("16093220510709943573688614912", 10)
 	s := BigBytes(b)
-	if s != "16093 YB" {
-		t.Errorf("Expected 16093 YB, got %v", s)
+	if s != "16 RB" {
+		t.Errorf("Expected 16 RB, got %v", s)
 	}
 	s = BigIBytes(b)
-	if s != "13312 YiB" {
-		t.Errorf("Expected 13312 YiB, got %v", s)
+	if s != "13 RiB" {
+		t.Errorf("Expected 13 RiB, got %v", s)
 	}
 }
 
