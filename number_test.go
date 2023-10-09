@@ -52,8 +52,8 @@ func TestFormatFloat(t *testing.T) {
 	}
 	// Test the things that could panic
 	panictests := []TestStruct{
-		{"RenderFloat(): invalid positive sign directive", "-", 12345.6789, "12,345.68"},
-		{"RenderFloat(): thousands separator directive must be followed by 3 digit-specifiers", "0.01", 12345.6789, "12,345.68"},
+		{"FormatFloat(): invalid positive sign directive", "-", 12345.6789, "12,345.68"},
+		{"FormatFloat(): thousands separator directive must be followed by 3 digit-specifiers", "0.01", 12345.6789, "12,345.68"},
 	}
 	for _, test := range panictests {
 		didPanic := false
