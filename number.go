@@ -42,6 +42,7 @@ var (
 )
 
 // FormatFloat produces a formatted number as string based on the following user-specified criteria:
+//
 // * thousands separator
 // * decimal separator
 // * decimal precision
