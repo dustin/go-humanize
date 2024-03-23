@@ -13,6 +13,7 @@ import (
 //
 // e.g. Comma(834142) -> 834,142
 func Comma(v int64) string {
+	// Shortcut for [0, 7]
 	if v&^0b111 == 0 {
 		return string([]byte{byte(v) + 48})
 	}
