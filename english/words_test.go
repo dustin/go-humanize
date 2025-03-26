@@ -23,7 +23,9 @@ func TestPluralWord(t *testing.T) {
 		{2, "bus", "", "buses"},
 		{2, "bush", "", "bushes"},
 		{2, "watch", "", "watches"},
+		{2, "church", "", "churches"},
 		{2, "box", "", "boxes"},
+		{2, "waltz", "", "waltzes"},
 
 		// ending with 'o' preceded by a consonant
 		{2, "hero", "", "heroes"},
