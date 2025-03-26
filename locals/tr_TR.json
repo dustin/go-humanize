@@ -1,0 +1,36 @@
+{
+	"magnitudes": {
+		"now": "şimdi",
+		"second": "1 saniye",
+		"seconds": "%d saniye",
+		"minute": "1 dakika",
+		"minutes": "%d dakika",
+		"hour": "1 saat",
+		"hours": "%d saat",
+		"day": "1 gün",
+		"days": "%d gün",
+		"week": "1 hafta",
+		"weeks": "%d hafta",
+		"month": "1 ay",
+		"months": "%d ay",
+		"year": "1 yıl",
+		"years": "%d yıl",
+		"longtime": "uzun süre"
+	},
+
+	"indicators": {
+		"before": {
+			"word": "önce",
+			"fix": "suffix"
+		},
+
+		"later": {
+			"word": "sonra",
+			"fix": "suffix"
+		}
+	},
+
+	"ordinals": [
+		["%.", "."]
+	]
+}

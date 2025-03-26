@@ -20,7 +20,13 @@ const (
 //
 // Time(someT) -> "3 weeks ago"
 func Time(then time.Time) string {
-	return RelTime(then, time.Now(), "ago", "from now")
+	ValidateLanguage()
+	return RelTime(
+		then,
+		time.Now(),
+		GetRuleset().Inds.Before.Word,
+		GetRuleset().Inds.Later.Word,
+	)
 }
 
 // A RelTimeMagnitude struct contains a relative time point at which
@@ -44,24 +50,29 @@ type RelTimeMagnitude struct {
 	DivBy  time.Duration
 }
 
-var defaultMagnitudes = []RelTimeMagnitude{
-	{time.Second, "now", time.Second},
-	{2 * time.Second, "1 second %s", 1},
-	{time.Minute, "%d seconds %s", time.Second},
-	{2 * time.Minute, "1 minute %s", 1},
-	{time.Hour, "%d minutes %s", time.Minute},
-	{2 * time.Hour, "1 hour %s", 1},
-	{Day, "%d hours %s", time.Hour},
-	{2 * Day, "1 day %s", 1},
-	{Week, "%d days %s", Day},
-	{2 * Week, "1 week %s", 1},
-	{Month, "%d weeks %s", Week},
-	{2 * Month, "1 month %s", 1},
-	{Year, "%d months %s", Month},
-	{18 * Month, "1 year %s", 1},
-	{2 * Year, "2 years %s", 1},
-	{LongTime, "%d years %s", Year},
-	{math.MaxInt64, "a long while %s", 1},
+var defaultMagnitudes = []RelTimeMagnitude{}
+
+// UpdateMagnitudes to current local ruleset
+func UpdateMagnitudes() {
+	defaultMagnitudes = []RelTimeMagnitude{
+		{time.Second, GetRuleset().Mags.Now, time.Second},
+		{2 * time.Second, GetRuleset().Mags.Second + " %s", 1},
+		{time.Minute, GetRuleset().Mags.Seconds + " %s", time.Second},
+		{2 * time.Minute, GetRuleset().Mags.Minute + " %s", 1},
+		{time.Hour, GetRuleset().Mags.Minutes + " %s", time.Minute},
+		{2 * time.Hour, GetRuleset().Mags.Hour + " %s", 1},
+		{Day, GetRuleset().Mags.Hours + " %s", time.Hour},
+		{2 * Day, GetRuleset().Mags.Day + " %s", 1},
+		{Week, GetRuleset().Mags.Days + " %s", Day},
+		{2 * Week, GetRuleset().Mags.Week + " %s", 1},
+		{Month, GetRuleset().Mags.Weeks + " %s", Week},
+		{2 * Month, GetRuleset().Mags.Month + " %s", 1},
+		{Year, GetRuleset().Mags.Months + " %s", Month},
+		{18 * Month, GetRuleset().Mags.Year + " %s", 1},
+		{2 * Year, "2" + GetRuleset().Mags.Years[2:] + " %s", 1},
+		{LongTime, GetRuleset().Mags.Years + " %s", Year},
+		{math.MaxInt64, GetRuleset().Mags.Longtime + " %s", 1},
+	}
 }
 
 // RelTime formats a time into a relative string.
