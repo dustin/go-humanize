@@ -65,18 +65,29 @@ func logn(n, b float64) float64 {
 	return math.Log(n) / math.Log(b)
 }
 
-func humanateBytes(s uint64, base float64, sizes []string) string {
+func countDigits(n int64) int {
+	digits := 0
+	for n != 0 {
+		n /= 10
+		digits += 1
+	}
+	return digits
+}
+
+func humanateBytes(s uint64, base float64, minDigits int, sizes []string) string {
 	if s < 10 {
 		return fmt.Sprintf("%d B", s)
 	}
 	e := math.Floor(logn(float64(s), base))
 	suffix := sizes[int(e)]
-	val := math.Floor(float64(s)/math.Pow(base, e)*10+0.5) / 10
-	f := "%.0f %s"
-	if val < 10 {
-		f = "%.1f %s"
+	rounding := math.Pow10(minDigits - 1)
+	val := math.Floor(float64(s)/math.Pow(base, e)*rounding+0.5) / rounding
+	ff := "%%.%df %%s"
+	digits := minDigits - countDigits(int64(val))
+	if digits < 0 {
+		digits = 0
 	}
-
+	f := fmt.Sprintf(ff, digits)
 	return fmt.Sprintf(f, val, suffix)
 }
 
@@ -87,7 +98,17 @@ func humanateBytes(s uint64, base float64, sizes []string) string {
 // Bytes(82854982) -> 83 MB
 func Bytes(s uint64) string {
 	sizes := []string{"B", "kB", "MB", "GB", "TB", "PB", "EB"}
-	return humanateBytes(s, 1000, sizes)
+	return humanateBytes(s, 1000, 2, sizes)
+}
+
+// BytesN produces a human readable representation of an SI size, with at least the specified number of digits.
+//
+// See also: ParseBytes.
+//
+// BytesN(82854982, 3) -> 82.9 MB
+func BytesN(s uint64, n int) string {
+	sizes := []string{"B", "kB", "MB", "GB", "TB", "PB", "EB"}
+	return humanateBytes(s, 1000, n, sizes)
 }
 
 // IBytes produces a human readable representation of an IEC size.
@@ -97,7 +118,17 @@ func Bytes(s uint64) string {
 // IBytes(82854982) -> 79 MiB
 func IBytes(s uint64) string {
 	sizes := []string{"B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"}
-	return humanateBytes(s, 1024, sizes)
+	return humanateBytes(s, 1024, 2, sizes)
+}
+
+// IBytesN produces a human readable representation of an IEC size.
+//
+// See also: ParseBytes.
+//
+// IBytesN(82854982, 4) -> 79.02 MiB
+func IBytesN(s uint64, n int) string {
+	sizes := []string{"B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"}
+	return humanateBytes(s, 1024, n, sizes)
 }
 
 // ParseBytes parses a string representation of bytes into the number
