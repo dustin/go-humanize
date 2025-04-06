@@ -103,6 +103,8 @@ func TestBytes(t *testing.T) {
 		// Overflows.
 		// {"bytes(1EB - 1P)", Bytes((KByte*EByte)-PByte), "1023EB"},
 
+		{"bytesN(1234, 3)", BytesN(1234, 3), "1.23 kB"},
+
 		{"bytes(0)", IBytes(0), "0 B"},
 		{"bytes(1)", IBytes(1), "1 B"},
 		{"bytes(803)", IBytes(803), "803 B"},
@@ -130,6 +132,9 @@ func TestBytes(t *testing.T) {
 		{"bytes(5.5GiB)", IBytes(5.5 * GiByte), "5.5 GiB"},
 
 		{"bytes(5.5GB)", Bytes(5.5 * GByte), "5.5 GB"},
+
+		{"bytes(123456789, 3)", IBytesN(123456789, 3), "118 MiB"},
+		{"bytes(123456789, 6)", IBytesN(123456789, 6), "117.738 MiB"},
 	}.validate(t)
 }
 
