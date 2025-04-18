@@ -2,7 +2,9 @@ package humanize
 
 import (
 	"fmt"
+	"math"
 	"math/big"
+	"strconv"
 	"strings"
 	"unicode"
 )
@@ -107,22 +109,37 @@ var bigBytesSizeTable = map[string]*big.Int{
 	"qi": BigQiByte,
 }
 
-var ten = big.NewInt(10)
-
 func humanateBigBytes(s, base *big.Int, sizes []string) string {
-	if s.Cmp(ten) < 0 {
-		return fmt.Sprintf("%d B", s)
+	if s.Cmp(base) < 0 {
+		return strconv.FormatInt(s.Int64(), 10) + " B"
 	}
 	c := (&big.Int{}).Set(s)
 	val, mag := oomm(c, base, len(sizes)-1)
-	suffix := sizes[mag]
-	f := "%.0f %s"
-	if val < 10 {
-		f = "%.1f %s"
+
+	// round preserving at least 2 significant digits and without
+	// producing a value FormatFloat/Sprintf would round up
+	if val >= 10 {
+		val = math.Floor(val + 0.5)
+	} else {
+		val = math.Floor(val*10+0.5) / 10
 	}
 
-	return fmt.Sprintf(f, val, suffix)
+	// avoid numbers like 1000 KB instead of 1.0 MB
+	if val >= float64(base.Int64()) {
+		mag++
+		val = 1
+	}
+	suffix := sizes[mag]
 
+	// format: one decimal if <10, otherwise no decimals
+	var num string
+	if val < 10 {
+		num = strconv.FormatFloat(val, 'f', 1, 64)
+	} else {
+		num = strconv.FormatFloat(val, 'f', 0, 64)
+	}
+
+	return num + " " + suffix
 }
 
 // BigBytes produces a human readable representation of an SI size.

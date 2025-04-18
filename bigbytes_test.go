@@ -88,19 +88,19 @@ func TestBigBytes(t *testing.T) {
 		{"bytes(999)", bbyte(999), "999 B"},
 
 		{"bytes(1024)", bbyte(1024), "1.0 kB"},
-		{"bytes(1MB - 1)", bbyte(MByte - Byte), "1000 kB"},
+		{"bytes(1MB - 1)", bbyte(MByte - Byte), "1.0 MB"},
 
 		{"bytes(1MB)", bbyte(1024 * 1024), "1.0 MB"},
-		{"bytes(1GB - 1K)", bbyte(GByte - KByte), "1000 MB"},
+		{"bytes(1GB - 1K)", bbyte(GByte - KByte), "1.0 GB"},
 
 		{"bytes(1GB)", bbyte(GByte), "1.0 GB"},
-		{"bytes(1TB - 1M)", bbyte(TByte - MByte), "1000 GB"},
+		{"bytes(1TB - 1M)", bbyte(TByte - MByte), "1.0 TB"},
 
 		{"bytes(1TB)", bbyte(TByte), "1.0 TB"},
 		{"bytes(1PB - 1T)", bbyte(PByte - TByte), "999 TB"},
 
 		{"bytes(1PB)", bbyte(PByte), "1.0 PB"},
-		{"bytes(1PB - 1T)", bbyte(EByte - PByte), "999 PB"},
+		{"bytes(1EB - 1P)", bbyte(EByte - PByte), "999 PB"},
 
 		{"bytes(1EB)", bbyte(EByte), "1.0 EB"},
 		// Overflows.
@@ -112,19 +112,19 @@ func TestBigBytes(t *testing.T) {
 		{"bytes(1023)", bibyte(1023), "1023 B"},
 
 		{"bytes(1024)", bibyte(1024), "1.0 KiB"},
-		{"bytes(1MB - 1)", bibyte(MiByte - IByte), "1024 KiB"},
+		{"bytes(1MiB - 1)", bibyte(MiByte - IByte), "1.0 MiB"},
 
-		{"bytes(1MB)", bibyte(1024 * 1024), "1.0 MiB"},
-		{"bytes(1GB - 1K)", bibyte(GiByte - KiByte), "1024 MiB"},
+		{"bytes(1MiB)", bibyte(1024 * 1024), "1.0 MiB"},
+		{"bytes(1GiB - 1Ki)", bibyte(GiByte - KiByte), "1.0 GiB"},
 
-		{"bytes(1GB)", bibyte(GiByte), "1.0 GiB"},
-		{"bytes(1TB - 1M)", bibyte(TiByte - MiByte), "1024 GiB"},
+		{"bytes(1GiB)", bibyte(GiByte), "1.0 GiB"},
+		{"bytes(1TiB - 1Mi)", bibyte(TiByte - MiByte), "1.0 TiB"},
 
-		{"bytes(1TB)", bibyte(TiByte), "1.0 TiB"},
-		{"bytes(1PB - 1T)", bibyte(PiByte - TiByte), "1023 TiB"},
+		{"bytes(1TiB)", bibyte(TiByte), "1.0 TiB"},
+		{"bytes(1PiB - 1Ti)", bibyte(PiByte - TiByte), "1023 TiB"},
 
-		{"bytes(1PB)", bibyte(PiByte), "1.0 PiB"},
-		{"bytes(1PB - 1T)", bibyte(EiByte - PiByte), "1023 PiB"},
+		{"bytes(1PiB)", bibyte(PiByte), "1.0 PiB"},
+		{"bytes(1EiB - 1Pi)", bibyte(EiByte - PiByte), "1023 PiB"},
 
 		{"bytes(1EiB)", bibyte(EiByte), "1.0 EiB"},
 		// Overflows.
@@ -133,6 +133,8 @@ func TestBigBytes(t *testing.T) {
 		{"bytes(5.5GiB)", bibyte(5.5 * GiByte), "5.5 GiB"},
 
 		{"bytes(5.5GB)", bbyte(5.5 * GByte), "5.5 GB"},
+
+		{"bytes(31450000)", bbyte(31450000), "31 MB"},
 	}.validate(t)
 }
 
