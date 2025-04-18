@@ -66,18 +66,38 @@ func logn(n, b float64) float64 {
 }
 
 func humanateBytes(s uint64, base float64, sizes []string) string {
-	if s < 10 {
-		return fmt.Sprintf("%d B", s)
+	if s < uint64(base) {
+		return strconv.FormatUint(s, 10) + " B"
 	}
 	e := math.Floor(logn(float64(s), base))
-	suffix := sizes[int(e)]
-	val := math.Floor(float64(s)/math.Pow(base, e)*10+0.5) / 10
-	f := "%.0f %s"
-	if val < 10 {
-		f = "%.1f %s"
+
+	val := float64(s) / math.Pow(base, e)
+
+	fmt.Println(val)
+	// round preserving at least 2 significant digits and without
+	// producing a value FormatFloat/Sprintf would round up
+	if val >= 10 {
+		val = math.Floor(val + 0.5)
+	} else {
+		val = math.Floor(val*10+0.5) / 10
 	}
 
-	return fmt.Sprintf(f, val, suffix)
+	// avoid numbers like 1000 KB instead of 1.0 MB
+	if val >= base {
+		e++
+		val = 1
+	}
+	suffix := sizes[int(e)]
+
+	// format: one decimal if <10, otherwise no decimals
+	var num string
+	if val < 10 {
+		num = strconv.FormatFloat(val, 'f', 1, 64)
+	} else {
+		num = strconv.FormatFloat(val, 'f', 0, 64)
+	}
+
+	return num + " " + suffix
 }
 
 // Bytes produces a human readable representation of an SI size.
