@@ -91,7 +91,7 @@ func humanateBytes(s uint64, base float64, minDigits int, sizes []string) string
 	return fmt.Sprintf(f, val, suffix)
 }
 
-// Bytes produces a human readable representation of an SI size.
+// Bytes produces a human-readable representation of an SI size.
 //
 // See also: ParseBytes.
 //
@@ -101,17 +101,20 @@ func Bytes(s uint64) string {
 	return humanateBytes(s, 1000, 2, sizes)
 }
 
-// BytesN produces a human readable representation of an SI size, with at least the specified number of digits.
+// BytesN produces a human-readable representation of an SI size.
+// n specifies the total number of digits to output, including the decimal part.
+// If n is less than or equal to the number of digits in the integer part, the decimal part will be omitted.
 //
 // See also: ParseBytes.
 //
 // BytesN(82854982, 3) -> 82.9 MB
+// BytesN(82854982, 4) -> 82.85 MB
 func BytesN(s uint64, n int) string {
 	sizes := []string{"B", "kB", "MB", "GB", "TB", "PB", "EB"}
 	return humanateBytes(s, 1000, n, sizes)
 }
 
-// IBytes produces a human readable representation of an IEC size.
+// IBytes produces a human-readable representation of an IEC size.
 //
 // See also: ParseBytes.
 //
@@ -121,11 +124,15 @@ func IBytes(s uint64) string {
 	return humanateBytes(s, 1024, 2, sizes)
 }
 
-// IBytesN produces a human readable representation of an IEC size.
+// IBytesN produces a human-readable representation of an IEC size.
+// n specifies the total number of digits to output, including the decimal part.
+// If n is less than or equal to the number of digits in the integer part, the decimal part will be omitted.
 //
 // See also: ParseBytes.
 //
-// IBytesN(82854982, 4) -> 79.02 MiB
+// IBytesN(82854982, 4)  -> 79.02 MiB
+// IBytesN(123456789, 3) -> 118 MiB
+// IBytesN(123456789, 6) -> 117.738 MiB
 func IBytesN(s uint64, n int) string {
 	sizes := []string{"B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"}
 	return humanateBytes(s, 1024, n, sizes)
