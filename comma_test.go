@@ -45,6 +45,19 @@ func TestCommafWithDigits(t *testing.T) {
 	}.validate(t)
 }
 
+func TestCommafWithMinDigits(t *testing.T) {
+	testList{
+		{"1.2, 0", CommafWithMinDigits(1, 0), "1"},
+		{"1.2, 0", CommafWithMinDigits(1, 1), "1.0"},
+		{"1.2, 0", CommafWithMinDigits(1, 2), "1.00"},
+		{"1.2, 0", CommafWithMinDigits(1, 3), "1.000"},
+		{"1.2, 0", CommafWithMinDigits(1.2, 0), "1"},
+		{"1.2, 1", CommafWithMinDigits(1.2, 1), "1.2"},
+		{"1.2, 2", CommafWithMinDigits(1.2, 2), "1.20"},
+		{"1.2, 3", CommafWithMinDigits(1.2, 3), "1.200"},
+	}.validate(t)
+}
+
 func TestCommafs(t *testing.T) {
 	testList{
 		{"0", Commaf(0), "0"},
