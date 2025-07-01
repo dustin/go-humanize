@@ -143,3 +143,14 @@ func TestVeryBigCommas(t *testing.T) {
 		}
 	}
 }
+
+func TestHumanizeBigIntMutation(t *testing.T) {
+	value := big.NewInt(1000000)
+	value = value.Mul(value, value)
+	expected := BigComma(value)
+	actual := BigComma(value)
+	if expected != actual {
+		t.Log(expected, " != ", actual)
+		t.Fail()
+	}
+}

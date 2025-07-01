@@ -100,7 +100,8 @@ func CommafWithDigits(f float64, decimals int) string {
 
 // BigComma produces a string form of the given big.Int in base 10
 // with commas after every three orders of magnitude.
-func BigComma(b *big.Int) string {
+func BigComma(bin *big.Int) string {
+	b := new(big.Int).Set(bin)
 	sign := ""
 	if b.Sign() < 0 {
 		sign = "-"
