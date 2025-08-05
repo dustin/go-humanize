@@ -10,6 +10,7 @@ func TestPast(t *testing.T) {
 	now := time.Now()
 	testList{
 		{"now", Time(now), "now"},
+
 		{"1 second ago", Time(now.Add(-1 * time.Second)), "1 second ago"},
 		{"12 seconds ago", Time(now.Add(-12 * time.Second)), "12 seconds ago"},
 		{"30 seconds ago", Time(now.Add(-30 * time.Second)), "30 seconds ago"},
