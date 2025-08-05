@@ -98,6 +98,16 @@ func CommafWithDigits(f float64, decimals int) string {
 	return stripTrailingDigits(Commaf(f), decimals)
 }
 
+
+// CommafWithMinDigits works like the Commaf but clamps the resulting
+// string to the given number of decimal places, filling any missing
+// decimal places with 0. This is useful for things like formatting money.
+//
+// e.g. CommafWithMinDigits(834142.3, 2) -> 834,142.30
+func CommafWithMinDigits(f float64, decimals int) string {
+	return clampTrailingDigits(Commaf(f), decimals)
+}
+
 // BigComma produces a string form of the given big.Int in base 10
 // with commas after every three orders of magnitude.
 func BigComma(bin *big.Int) string {
