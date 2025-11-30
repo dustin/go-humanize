@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"sort"
+	"strings"
 	"time"
 )
 
@@ -112,6 +113,9 @@ func CustomRelTime(a, b time.Time, albl, blbl string, magnitudes []RelTimeMagnit
 		} else {
 			escaped = ch == '%'
 		}
+	}
+	if blbl == "" {
+		return strings.Trim(fmt.Sprintf(mag.Format, args...), " ")
 	}
 	return fmt.Sprintf(mag.Format, args...)
 }
