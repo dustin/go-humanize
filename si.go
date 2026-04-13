@@ -39,6 +39,10 @@ func revfmap(in map[float64]string) map[string]float64 {
 	for k, v := range in {
 		rv[v] = math.Pow(10, k)
 	}
+	// Accept Greek letter mu (U+03BC) as an alias for micro sign (U+00B5)
+	if m, ok := rv["\u00b5"]; ok {
+		rv["\u03bc"] = m
+	}
 	return rv
 }
 
@@ -49,6 +53,8 @@ func init() {
 	for _, v := range siPrefixTable {
 		ri += v
 	}
+	// Also accept Greek letter mu (U+03BC) as alias for micro sign (U+00B5)
+	ri += "\u03bc"
 	ri += `]?)(.*)`
 
 	riParseRegex = regexp.MustCompile(ri)
