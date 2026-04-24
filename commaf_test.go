@@ -10,8 +10,9 @@ import (
 )
 
 func BenchmarkBigCommaf(b *testing.B) {
+	f := big.NewFloat(1234567890.83584)
 	for i := 0; i < b.N; i++ {
-		Commaf(1234567890.83584)
+		BigCommaf(f)
 	}
 }
 
