@@ -3,6 +3,7 @@ package humanize
 import (
 	"fmt"
 	"math"
+	"math/bits"
 	"strconv"
 	"strings"
 	"unicode"
@@ -170,6 +171,18 @@ func ParseBytes(s string) (uint64, error) {
 
 	extra := strings.ToLower(strings.TrimSpace(s[lastDigit:]))
 	if m, ok := bytesSizeTable[extra]; ok {
+		// Parse whole-number inputs exactly. A float64 cannot represent
+		// integers above 2^53, and the multiplication below would also reject
+		// otherwise-valid values near math.MaxUint64, so route integers through
+		// uint64 arithmetic with an overflow check.
+		if !strings.ContainsRune(num, '.') {
+			if v, perr := strconv.ParseUint(num, 10, 64); perr == nil {
+				if hi, lo := bits.Mul64(v, m); hi == 0 {
+					return lo, nil
+				}
+				return 0, fmt.Errorf("too large: %v", s)
+			}
+		}
 		f *= float64(m)
 		if f >= math.MaxUint64 {
 			return 0, fmt.Errorf("too large: %v", s)

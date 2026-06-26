@@ -75,6 +75,30 @@ func TestByteErrors(t *testing.T) {
 	}
 }
 
+func TestParseBytesExactIntegers(t *testing.T) {
+	// Whole-number byte counts must be parsed exactly, including values a
+	// float64 cannot represent and the full uint64 range.
+	tests := []struct {
+		in  string
+		exp uint64
+	}{
+		{"9007199254740993", 9007199254740993},         // 2^53 + 1
+		{"9007199254740993B", 9007199254740993},        // same, with suffix
+		{"18446744073709551615", 18446744073709551615}, // math.MaxUint64
+		{"18446744073709551615 B", 18446744073709551615},
+	}
+	for _, p := range tests {
+		got, err := ParseBytes(p.in)
+		if err != nil {
+			t.Errorf("Couldn't parse %v: %v", p.in, err)
+			continue
+		}
+		if got != p.exp {
+			t.Errorf("Expected %d for %q, got %d", p.exp, p.in, got)
+		}
+	}
+}
+
 func TestBytes(t *testing.T) {
 	testList{
 		{"bytes(0)", Bytes(0), "0 B"},
