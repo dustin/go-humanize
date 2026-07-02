@@ -12,7 +12,7 @@ const (
 	Day      = 24 * time.Hour
 	Week     = 7 * Day
 	Month    = 30 * Day
-	Year     = 12 * Month
+	Year     = 365 * Day
 	LongTime = 37 * Year
 )
 

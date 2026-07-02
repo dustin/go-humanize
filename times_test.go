@@ -37,6 +37,25 @@ func TestPast(t *testing.T) {
 	}.validate(t)
 }
 
+// TestYearLength verifies that the Year constant is 365 days so that
+// multi-year durations are counted correctly.  Previously Year was derived
+// from 12 * Month (12 * 30 days = 360 days), which caused the displayed year
+// count to be inflated for long durations.  For example, 10 Gregorian years
+// (3650 days) would be reported as "10 years ago" under both values, but
+// 36.5 Gregorian years (13322 days) would read "37 years ago" with 360-day
+// years and correctly "36 years ago" with 365-day years.
+func TestYearLength(t *testing.T) {
+	if Year != 365*Day {
+		t.Errorf("Year constant should be 365 days, got %v", Year)
+	}
+
+	now := time.Now()
+	// 36.5 * 365 = 13322 days — should be "36 years ago", not "37 years ago"
+	testList{
+		{"36 years ago", Time(now.Add(-13322 * Day)), "36 years ago"},
+	}.validate(t)
+}
+
 func TestReltimeOffbyone(t *testing.T) {
 	testList{
 		{"1w-1", RelTime(time.Unix(0, 0), time.Unix(7*24*60*60, -1), "ago", ""), "6 days ago"},
@@ -119,6 +138,6 @@ func TestCustomRelTime(t *testing.T) {
 		{"6 months from now", customRelTime(now.Add(+6*Month - time.Second)), "25 weeks from now"},
 		{"1 year from now", customRelTime(now.Add(+365 * Day)), "12 months from now"},
 		{"2 years from now", customRelTime(now.Add(+2 * Year)), "24 months from now"},
-		{"a while from now", customRelTime(now.Add(+LongTime)), "444 months from now"},
+		{"a while from now", customRelTime(now.Add(+LongTime)), "450 months from now"},
 	}.validate(t)
 }
