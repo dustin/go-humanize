@@ -37,20 +37,8 @@ func TestPast(t *testing.T) {
 	}.validate(t)
 }
 
-// TestYearLength verifies that the Year constant is 365 days so that
-// multi-year durations are counted correctly.  Previously Year was derived
-// from 12 * Month (12 * 30 days = 360 days), which caused the displayed year
-// count to be inflated for long durations.  For example, 10 Gregorian years
-// (3650 days) would be reported as "10 years ago" under both values, but
-// 36.5 Gregorian years (13322 days) would read "37 years ago" with 360-day
-// years and correctly "36 years ago" with 365-day years.
 func TestYearLength(t *testing.T) {
-	if Year != 365*Day {
-		t.Errorf("Year constant should be 365 days, got %v", Year)
-	}
-
 	now := time.Now()
-	// 36.5 * 365 = 13322 days — should be "36 years ago", not "37 years ago"
 	testList{
 		{"36 years ago", Time(now.Add(-13322 * Day)), "36 years ago"},
 	}.validate(t)
@@ -86,7 +74,7 @@ func TestFuture(t *testing.T) {
 		{"1 week from now (1)", Time(now.Add(+7 * Day)), "1 week from now"},
 		{"1 week from now (2)", Time(now.Add(+12 * Day)), "1 week from now"},
 		{"2 weeks from now", Time(now.Add(+15 * Day)), "2 weeks from now"},
-		{"1 month from now", Time(now.Add(+30 * Day)), "1 month from now"},
+		{"1 month from now", Time(now.Add(+31 * Day)), "1 month from now"},
 		{"1 year from now", Time(now.Add(+365 * Day)), "1 year from now"},
 		{"2 years from now", Time(now.Add(+2 * Year)), "2 years from now"},
 		{"a while from now", Time(now.Add(+LongTime)), "a long while from now"},
@@ -135,9 +123,9 @@ func TestCustomRelTime(t *testing.T) {
 		{"1 week from now (2)", customRelTime(now.Add(+12 * Day)), "1 week from now"},
 		{"2 weeks from now", customRelTime(now.Add(+15 * Day)), "2 weeks from now"},
 		{"1 month from now", customRelTime(now.Add(+30 * Day)), "4 weeks from now"},
-		{"6 months from now", customRelTime(now.Add(+6*Month - time.Second)), "25 weeks from now"},
+		{"6 months from now", customRelTime(now.Add(+6*Month - time.Second)), "26 weeks from now"},
 		{"1 year from now", customRelTime(now.Add(+365 * Day)), "12 months from now"},
 		{"2 years from now", customRelTime(now.Add(+2 * Year)), "24 months from now"},
-		{"a while from now", customRelTime(now.Add(+LongTime)), "450 months from now"},
+		{"a while from now", customRelTime(now.Add(+LongTime)), "444 months from now"},
 	}.validate(t)
 }

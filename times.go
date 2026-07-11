@@ -11,8 +11,8 @@ import (
 const (
 	Day      = 24 * time.Hour
 	Week     = 7 * Day
-	Month    = 30 * Day
 	Year     = 365 * Day
+	Month    = Year / 12
 	LongTime = 37 * Year
 )
 
