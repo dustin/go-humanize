@@ -143,3 +143,60 @@ func TestBug106(t *testing.T) {
 		}
 	}
 }
+
+// A magnitude with no prefix to name it must not lose the magnitude.
+//
+// siPrefixTable spans 10^-30 to 10^30. Beyond it the exponent lookup missed,
+// so the prefix came back as the empty string while the value stayed scaled
+// for the prefix that was never returned. Nothing errored: ComputeSI just
+// answered a number that was wrong by up to 10^300, and SI printed it.
+// The electron mass, 9.109e-31 kg, formatted as "910.938 kg".
+func TestComputeSIOutsidePrefixTable(t *testing.T) {
+	tests := []struct {
+		name string
+		in   float64
+		want float64
+		pfx  string
+	}{
+		{"electron mass", 9.1093837015e-31, 0.91093837015, "q"},
+		{"planck constant", 6.62607015e-34, 0.000662607015, "q"},
+		{"below the table", 1e-33, 0.001, "q"},
+		{"far below the table", 1e-45, 1e-15, "q"},
+		{"above the table", 1e34, 10000, "Q"},
+		{"far above the table", 1e60, 1e30, "Q"},
+		{"largest float64", math.MaxFloat64, math.MaxFloat64 / 1e30, "Q"},
+		{"negative below the table", -9.1093837015e-31, -0.91093837015, "q"},
+		{"last exponent in the table", 1e-30, 1, "q"},
+	}
+
+	for _, test := range tests {
+		got, pfx := ComputeSI(test.in)
+		if pfx != test.pfx {
+			t.Errorf("%s: ComputeSI(%g) prefix = %q, want %q", test.name, test.in, pfx, test.pfx)
+		}
+		if rel := math.Abs(got/test.want - 1); rel > 1e-9 {
+			t.Errorf("%s: ComputeSI(%g) value = %g, want %g", test.name, test.in, got, test.want)
+		}
+	}
+}
+
+// The property the bug broke: whatever prefix comes back, multiplying the
+// value by that prefix's power of ten has to give the input again. This is
+// what callers rely on and what makes SI/ParseSI a round trip.
+func TestComputeSIPreservesMagnitude(t *testing.T) {
+	for exp := -320; exp <= 308; exp++ {
+		in := math.Pow(10, float64(exp))
+		if in == 0 || math.IsInf(in, 0) {
+			continue
+		}
+		value, prefix := ComputeSI(in)
+		mult, ok := revSIPrefixTable[prefix]
+		if !ok {
+			t.Fatalf("1e%d: ComputeSI returned prefix %q, which is not in the table", exp, prefix)
+		}
+		if rel := math.Abs(value*mult/in - 1); rel > 1e-9 {
+			t.Errorf("1e%d: ComputeSI = (%g, %q); %g * %g = %g, want %g",
+				exp, value, prefix, value, mult, value*mult, in)
+		}
+	}
+}
