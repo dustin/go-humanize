@@ -71,6 +71,9 @@ func TestCommafs(t *testing.T) {
 		{"-1,000", Commaf(-1000), "-1,000"},
 		{"-100.11", Commaf(-100.11), "-100.11"},
 		{"-10", Commaf(-10), "-10"},
+		{"+Inf", Commaf(math.Inf(1)), "+Inf"},
+		{"-Inf", Commaf(math.Inf(-1)), "-Inf"},
+		{"NaN", Commaf(math.NaN()), "NaN"},
 	}.validate(t)
 }
 

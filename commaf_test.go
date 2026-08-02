@@ -41,5 +41,7 @@ func TestBigCommafs(t *testing.T) {
 		{"-1,000", BigCommaf(big.NewFloat(-1000)), "-1,000"},
 		{"-100.11", BigCommaf(big.NewFloat(-100.11)), "-100.11"},
 		{"-10", BigCommaf(big.NewFloat(-10)), "-10"},
+		{"+Inf", BigCommaf(big.NewFloat(math.Inf(1))), "+Inf"},
+		{"-Inf", BigCommaf(big.NewFloat(math.Inf(-1))), "-Inf"},
 	}.validate(t)
 }

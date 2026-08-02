@@ -62,6 +62,16 @@ func Comma(v int64) string {
 //
 // e.g. Commaf(834142.32) -> 834,142.32
 func Commaf(v float64) string {
+	if math.IsNaN(v) {
+		return "NaN"
+	}
+	if math.IsInf(v, 1) {
+		return "+Inf"
+	}
+	if math.IsInf(v, -1) {
+		return "-Inf"
+	}
+
 	buf := &bytes.Buffer{}
 	if v < 0 {
 		buf.Write([]byte{'-'})
