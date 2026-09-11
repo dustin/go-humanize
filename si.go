@@ -69,11 +69,19 @@ func ComputeSI(input float64) (float64, string) {
 	exponent := math.Floor(logn(mag, 10))
 	exponent = math.Floor(exponent/3) * 3
 
+	// Clamp to the supported SI prefix range so out-of-range magnitudes
+	// keep their scale in the numeric value instead of dropping the prefix (#153).
+	if exponent > 30 {
+		exponent = 30
+	} else if exponent < -30 {
+		exponent = -30
+	}
+
 	value := mag / math.Pow(10, exponent)
 
 	// Handle special case where value is exactly 1000.0
 	// Should return 1 M instead of 1000 k
-	if value == 1000.0 {
+	if value == 1000.0 && exponent < 30 {
 		exponent += 3
 		value = mag / math.Pow(10, exponent)
 	}

@@ -2,6 +2,7 @@ package humanize
 
 import (
 	"math"
+	"strings"
 	"testing"
 )
 
@@ -129,8 +130,8 @@ func BenchmarkParseSI(b *testing.B) {
 
 // There was a report that zeroes were being truncated incorrectly
 func TestBug106(t *testing.T) {
-	tests := []struct{
-		in float64
+	tests := []struct {
+		in   float64
 		want string
 	}{
 		{20.0, "20 U"},
@@ -138,8 +139,29 @@ func TestBug106(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		if got :=SIWithDigits(test.in, 0, "U") ;  got != test.want {
-			t.Errorf("on %f got %v, want %v", test.in, got, test.want);
+		if got := SIWithDigits(test.in, 0, "U"); got != test.want {
+			t.Errorf("on %f got %v, want %v", test.in, got, test.want)
 		}
+	}
+}
+
+func TestSIOutOfRangePrefix(t *testing.T) {
+	// Beyond quetta (10^30): keep Q prefix and put overflow in the number.
+	got := SI(1e33, "F")
+	if got != "1000 QF" && got != "1e+03 QF" && got != "1000.0 QF" {
+		// Ftoa may format 1000 as "1000" or scientific; require Q prefix and not bare unit.
+		if !strings.Contains(got, "Q") || strings.HasSuffix(strings.TrimSpace(got), "F") && !strings.Contains(got, "Q") {
+			t.Fatalf("got %q; want quetta-scaled value", got)
+		}
+	}
+	if !strings.Contains(got, "Q") {
+		t.Fatalf("missing Q prefix: %q", got)
+	}
+	v, p := ComputeSI(1e33)
+	if p != "Q" {
+		t.Fatalf("prefix=%q want Q", p)
+	}
+	if v < 100 || v > 10000 {
+		t.Fatalf("value=%v; want ~1000", v)
 	}
 }
