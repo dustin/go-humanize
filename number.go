@@ -161,7 +161,7 @@ func FormatFloat(format string, n float64) string {
 	intf, fracf := math.Modf(n + renderFloatPrecisionRounders[precision])
 
 	// generate integer part string
-	intStr := strconv.FormatInt(int64(intf), 10)
+	intStr := strconv.FormatFloat(intf, 'f', 0, 64)
 
 	// add thousand separator if required
 	if len(thousandStr) > 0 {
