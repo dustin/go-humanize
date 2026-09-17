@@ -61,6 +61,21 @@ func TestBigByteParsing(t *testing.T) {
 	}
 }
 
+func TestBigByteErrors(t *testing.T) {
+	got, err := ParseBigBytes("abc MB")
+	if err == nil {
+		t.Errorf("Expected error for non-numeric, got %v", got)
+	}
+	got, err = ParseBigBytes("42 JB")
+	if err == nil {
+		t.Errorf("Expected error for unhandled size, got %v", got)
+	}
+	got, err = ParseBigBytes("")
+	if err == nil {
+		t.Errorf("Expected error parsing nothing")
+	}
+}
+
 func TestOommLimit(t *testing.T) {
 	n := big.NewInt(1000000) // 1,000,000
 	b := big.NewInt(1000)    // Base 1000
