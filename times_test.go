@@ -37,6 +37,13 @@ func TestPast(t *testing.T) {
 	}.validate(t)
 }
 
+func TestYearLength(t *testing.T) {
+	now := time.Now()
+	testList{
+		{"36 years ago", Time(now.Add(-13322 * Day)), "36 years ago"},
+	}.validate(t)
+}
+
 func TestReltimeOffbyone(t *testing.T) {
 	testList{
 		{"1w-1", RelTime(time.Unix(0, 0), time.Unix(7*24*60*60, -1), "ago", ""), "6 days ago"},
@@ -67,7 +74,7 @@ func TestFuture(t *testing.T) {
 		{"1 week from now (1)", Time(now.Add(+7 * Day)), "1 week from now"},
 		{"1 week from now (2)", Time(now.Add(+12 * Day)), "1 week from now"},
 		{"2 weeks from now", Time(now.Add(+15 * Day)), "2 weeks from now"},
-		{"1 month from now", Time(now.Add(+30 * Day)), "1 month from now"},
+		{"1 month from now", Time(now.Add(+31 * Day)), "1 month from now"},
 		{"1 year from now", Time(now.Add(+365 * Day)), "1 year from now"},
 		{"2 years from now", Time(now.Add(+2 * Year)), "2 years from now"},
 		{"a while from now", Time(now.Add(+LongTime)), "a long while from now"},
@@ -116,7 +123,7 @@ func TestCustomRelTime(t *testing.T) {
 		{"1 week from now (2)", customRelTime(now.Add(+12 * Day)), "1 week from now"},
 		{"2 weeks from now", customRelTime(now.Add(+15 * Day)), "2 weeks from now"},
 		{"1 month from now", customRelTime(now.Add(+30 * Day)), "4 weeks from now"},
-		{"6 months from now", customRelTime(now.Add(+6*Month - time.Second)), "25 weeks from now"},
+		{"6 months from now", customRelTime(now.Add(+6*Month - time.Second)), "26 weeks from now"},
 		{"1 year from now", customRelTime(now.Add(+365 * Day)), "12 months from now"},
 		{"2 years from now", customRelTime(now.Add(+2 * Year)), "24 months from now"},
 		{"a while from now", customRelTime(now.Add(+LongTime)), "444 months from now"},
