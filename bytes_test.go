@@ -73,6 +73,14 @@ func TestByteErrors(t *testing.T) {
 	if err == nil {
 		t.Errorf("Expected error, got %v", got)
 	}
+	got, err = ParseBytes("18446744073709551616 EB")
+	if err == nil {
+		t.Errorf("Expected error, got %v", got)
+	}
+	got, err = ParseBytes("184467440737095516150 EB")
+	if err == nil {
+		t.Errorf("Expected error, got %v", got)
+	}
 }
 
 func TestParseBytesExactIntegers(t *testing.T) {
