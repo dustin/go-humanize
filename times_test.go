@@ -37,6 +37,16 @@ func TestPast(t *testing.T) {
 	}.validate(t)
 }
 
+// Bug #85: an empty label should not leave a trailing space behind.
+func TestRelTimeEmptyLabel(t *testing.T) {
+	now := time.Now()
+	testList{
+		{"empty ago label", RelTime(now.Add(-3*Week), now, "", ""), "3 weeks"},
+		{"empty from-now label", RelTime(now, now.Add(3*Week), "", ""), "3 weeks"},
+		{"non-empty labels unaffected", RelTime(now.Add(-3*Week), now, "ago", "from now"), "3 weeks ago"},
+	}.validate(t)
+}
+
 func TestReltimeOffbyone(t *testing.T) {
 	testList{
 		{"1w-1", RelTime(time.Unix(0, 0), time.Unix(7*24*60*60, -1), "ago", ""), "6 days ago"},
