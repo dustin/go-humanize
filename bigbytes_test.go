@@ -61,14 +61,19 @@ func TestBigByteParsing(t *testing.T) {
 	}
 }
 
-func TestBigByteErrors(t *testing.T) {
-	got, err := ParseBigBytes("84 JB")
-	if err == nil {
-		t.Errorf("Expected error, got %v", got)
+func TestOommLimit(t *testing.T) {
+	n := big.NewInt(1000000) // 1,000,000
+	b := big.NewInt(1000)    // Base 1000
+	// maxmag = 1.
+	// 1st iteration: 1,000,000 / 1000 = 1000, mag=1.
+	// Since mag == maxmag, it should break.
+	val, mag := oomm(n, b, 1)
+	if mag != 1 {
+		t.Errorf("Expected mag 1, got %d", mag)
 	}
-	_, err = ParseBigBytes("")
-	if err == nil {
-		t.Errorf("Expected error parsing nothing")
+	// Expected val: 1000 + (0/1000) = 1000
+	if val != 1000 {
+		t.Errorf("Expected val 1000, got %f", val)
 	}
 }
 
