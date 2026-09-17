@@ -137,6 +137,11 @@ func TestBytes(t *testing.T) {
 
 		{"bytesN(1234, 3)", BytesN(1234, 3), "1.23 kB"},
 
+		// Bug #103: floating point error caused double rounding to bump
+		// 31.449999... up to 31.5 and then up again to 32 MB.
+		{"bytes(31350000)", Bytes(31350000), "31 MB"},
+		{"bytes(31450000)", Bytes(31450000), "31 MB"},
+
 		{"bytes(0)", IBytes(0), "0 B"},
 		{"bytes(1)", IBytes(1), "1 B"},
 		{"bytes(803)", IBytes(803), "803 B"},

@@ -81,13 +81,26 @@ func humanateBytes(s uint64, base float64, minDigits int, sizes []string) string
 	}
 	e := math.Floor(logn(float64(s), base))
 	suffix := sizes[int(e)]
-	rounding := math.Pow10(minDigits - 1)
-	val := math.Floor(float64(s)/math.Pow(base, e)*rounding+0.5) / rounding
-	ff := "%%.%df %%s"
-	digits := minDigits - countDigits(int64(val))
-	if digits < 0 {
-		digits = 0
+	val := float64(s) / math.Pow(base, e)
+
+	// Determine how many decimal places to keep based on the unrounded
+	// value's integer-digit count, then round exactly once to that
+	// precision. Rounding first to a fixed precision and then again when
+	// formatting (double rounding) can flip the result at a boundary due
+	// to floating point error (see #103).
+	intDigits := countDigits(int64(val))
+	digits := max(minDigits-intDigits, 0)
+	rounding := math.Pow10(digits)
+	val = math.Floor(val*rounding+0.5) / rounding
+
+	// Rounding may have carried into an additional integer digit (e.g.
+	// 9.996 -> 10.0), which means fewer decimal places should be shown
+	// than originally computed.
+	if newIntDigits := countDigits(int64(val)); newIntDigits > intDigits {
+		digits = max(digits-(newIntDigits-intDigits), 0)
 	}
+
+	ff := "%%.%df %%s"
 	f := fmt.Sprintf(ff, digits)
 	return fmt.Sprintf(f, val, suffix)
 }
