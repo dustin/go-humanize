@@ -1,7 +1,6 @@
 package humanize
 
 import (
-	"bytes"
 	"math"
 	"math/big"
 	"strconv"
@@ -57,37 +56,48 @@ func Comma(v int64) string {
 	return string(output)
 }
 
+// commaf adds commas to s which is the string representation of a
+// floating point number.
+func commaf(s string) string {
+	n := len(s) + (len(s)-1)/3
+	b := make([]byte, 0, n)
+
+	var num, dec string
+	if i := strings.IndexByte(s, '.'); i != -1 {
+		num = s[:i]
+		dec = s[i+1:]
+	} else {
+		num = s
+	}
+	if len(num) > 0 && num[0] == '-' {
+		b = append(b, '-')
+		num = num[1:]
+	}
+	if i := len(num) % 3; i != 0 {
+		b = append(b, num[:i]...)
+		b = append(b, ',')
+		num = num[i:]
+	}
+	for len(num) >= 3 {
+		b = append(b, num[:3]...)
+		b = append(b, ',')
+		num = num[3:]
+	}
+	b = b[:len(b)-1] // Remove trailing ','
+
+	if dec != "" {
+		b = append(b, '.')
+		b = append(b, dec...)
+	}
+	return string(b)
+}
+
 // Commaf produces a string form of the given number in base 10 with
 // commas after every three orders of magnitude.
 //
 // e.g. Commaf(834142.32) -> 834,142.32
 func Commaf(v float64) string {
-	buf := &bytes.Buffer{}
-	if v < 0 {
-		buf.Write([]byte{'-'})
-		v = 0 - v
-	}
-
-	comma := []byte{','}
-
-	parts := strings.Split(strconv.FormatFloat(v, 'f', -1, 64), ".")
-	pos := 0
-	if len(parts[0])%3 != 0 {
-		pos += len(parts[0]) % 3
-		buf.WriteString(parts[0][:pos])
-		buf.Write(comma)
-	}
-	for ; pos < len(parts[0]); pos += 3 {
-		buf.WriteString(parts[0][pos : pos+3])
-		buf.Write(comma)
-	}
-	buf.Truncate(buf.Len() - 1)
-
-	if len(parts) > 1 {
-		buf.Write([]byte{'.'})
-		buf.WriteString(parts[1])
-	}
-	return buf.String()
+	return commaf(strconv.FormatFloat(v, 'f', -1, 64))
 }
 
 // CommafWithDigits works like the Commaf but limits the resulting
