@@ -41,7 +41,12 @@ func TestCommafWithDigits(t *testing.T) {
 		{"1.23, 0", CommafWithDigits(1.23, 0), "1"},
 		{"1.23, 1", CommafWithDigits(1.23, 1), "1.2"},
 		{"1.23, 2", CommafWithDigits(1.23, 2), "1.23"},
-		{"1.23, 3", CommafWithDigits(1.23, 3), "1.23"},
+		{"1.23, 3", CommafWithDigits(1.23, 3), "1.230"},
+		{"1000, 0", CommafWithDigits(1000, 0), "1,000"},
+		{"1000, 2", CommafWithDigits(1000, 2), "1,000.00"},
+		{"1000.00, 2", CommafWithDigits(1000.00, 2), "1,000.00"},
+		{"834142, 2", CommafWithDigits(834142, 2), "834,142.00"},
+		{"-1000, 2", CommafWithDigits(-1000, 2), "-1,000.00"},
 	}.validate(t)
 }
 

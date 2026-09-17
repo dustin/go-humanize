@@ -100,12 +100,24 @@ func Commaf(v float64) string {
 	return buf.String()
 }
 
-// CommafWithDigits works like the Commaf but limits the resulting
-// string to the given number of decimal places.
+// CommafWithDigits works like the Commaf but always formats the
+// resulting string to exactly the given number of decimal places,
+// truncating extra digits or padding with zeros as needed.
 //
 // e.g. CommafWithDigits(834142.32, 1) -> 834,142.3
+// e.g. CommafWithDigits(1000, 2) -> 1,000.00
 func CommafWithDigits(f float64, decimals int) string {
-	return stripTrailingDigits(Commaf(f), decimals)
+	s := stripTrailingDigits(Commaf(f), decimals)
+	if decimals <= 0 {
+		return s
+	}
+
+	if dot := strings.IndexByte(s, '.'); dot < 0 {
+		s += "." + strings.Repeat("0", decimals)
+	} else if have := len(s) - dot - 1; have < decimals {
+		s += strings.Repeat("0", decimals-have)
+	}
+	return s
 }
 
 // BigComma produces a string form of the given big.Int in base 10
