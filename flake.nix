@@ -1,6 +1,6 @@
 {
-  description = "GoProFS";
-  nixConfig.bash-prompt = "\[gopro-fs\]$ ";
+  description = "go-humanize";
+  nixConfig.bash-prompt = "\[go-humanize\]$ ";
 
   inputs.flake-utils.url = "github:numtide/flake-utils";
 
