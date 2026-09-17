@@ -1,0 +1,49 @@
+# Generates an HTML test coverage report and publishes it to GitHub
+# Pages, served at https://dustin.github.io/go-humanize/
+
+name: Coverage
+
+on:
+  push:
+    branches: [ "master" ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+    - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+
+    - name: Set up Go
+      uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6.1.0
+      with:
+        go-version: "1.27"
+
+    - name: Generate coverage report
+      run: |
+        go test -coverprofile=coverage.out ./...
+        mkdir -p public
+        go tool cover -html=coverage.out -o public/index.html
+
+    - name: Configure Pages
+      uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+    - name: Upload coverage report
+      uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+      with:
+        path: public
+
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
