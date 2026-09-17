@@ -154,3 +154,132 @@ func TestHumanizeBigIntMutation(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestParseComma(t *testing.T) {
+	tests := []struct {
+		in  string
+		exp int64
+	}{
+		{"0", 0},
+		{"10", 10},
+		{"1,000", 1000},
+		{"123,456,789", 123456789},
+		{"-10", -10},
+		{"-1,000", -1000},
+		{"-123,456,789", -123456789},
+		{"-9,223,372,036,854,775,808", math.MinInt64},
+		{"9,223,372,036,854,775,807", math.MaxInt64},
+	}
+
+	for _, p := range tests {
+		got, err := ParseComma(p.in)
+		if err != nil {
+			t.Errorf("Couldn't parse %v: %v", p.in, err)
+		}
+		if got != p.exp {
+			t.Errorf("Expected %v for %v, got %v", p.exp, p.in, got)
+		}
+	}
+
+	roundTripTests := []int64{
+		0,
+		123456789,
+		-123456789,
+		math.MaxInt64,
+		math.MinInt64,
+	}
+
+	for _, n := range roundTripTests {
+		got, err := ParseComma(Comma(n))
+		if err != nil {
+			t.Errorf("Round-trip failed for %v: %v", n, err)
+		}
+		if got != n {
+			t.Errorf("Round-trip failed: expected %v, got %v", n, got)
+		}
+	}
+}
+
+func TestParseCommaErrors(t *testing.T) {
+	errorTests := []string{
+		"",
+		"abc",
+		"123a456",
+		"1.5",
+	}
+
+	for _, s := range errorTests {
+		got, err := ParseComma(s)
+		if err == nil {
+			t.Errorf("Expected error for %q, got %v", s, got)
+		}
+		if got != 0 {
+			t.Errorf("Expected 0 on error for %q, got %v", s, got)
+		}
+	}
+}
+
+func TestParseCommaf(t *testing.T) {
+	tests := []struct {
+		in  string
+		exp float64
+	}{
+		{"0", 0},
+		{"10", 10},
+		{"1,000", 1000},
+		{"123,456,789", 123456789},
+		{"10.11", 10.11},
+		{"834,142.32", 834142.32},
+		{"-10", -10},
+		{"-1,000", -1000},
+		{"-100.11", -100.11},
+		{"-123,456,789.123", -123456789.123},
+	}
+
+	for _, p := range tests {
+		got, err := ParseCommaf(p.in)
+		if err != nil {
+			t.Errorf("Couldn't parse %v: %v", p.in, err)
+		}
+		if math.Abs(got-p.exp) > math.Abs(p.exp)*1e-9 {
+			t.Errorf("Expected %v for %v, got %v", p.exp, p.in, got)
+		}
+	}
+
+	roundTripTests := []float64{
+		0,
+		123456789,
+		123456789.123,
+		-123456789,
+		-123456789.123,
+	}
+
+	for _, f := range roundTripTests {
+		got, err := ParseCommaf(Commaf(f))
+		if err != nil {
+			t.Errorf("Round-trip failed for %v: %v", f, err)
+		}
+		if math.Abs(got-f) > math.Abs(f)*1e-9 {
+			t.Errorf("Round-trip failed: expected %v, got %v", f, got)
+		}
+	}
+}
+
+func TestParseCommafErrors(t *testing.T) {
+	errorTests := []string{
+		"",
+		"abc",
+		"123a456",
+		"1.2.3",
+	}
+
+	for _, s := range errorTests {
+		got, err := ParseCommaf(s)
+		if err == nil {
+			t.Errorf("Expected error for %q, got %v", s, got)
+		}
+		if got != 0 {
+			t.Errorf("Expected 0 on error for %q, got %v", s, got)
+		}
+	}
+}

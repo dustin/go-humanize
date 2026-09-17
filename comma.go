@@ -129,3 +129,19 @@ func BigComma(bin *big.Int) string {
 	parts[j] = strconv.Itoa(int(b.Int64()))
 	return sign + strings.Join(parts[j:], ",")
 }
+
+// ParseComma parses a string produced by Comma.
+// It strips commas and returns the int64 value, or an error if the
+// string cannot be parsed.
+func ParseComma(s string) (int64, error) {
+	s = strings.ReplaceAll(s, ",", "")
+	return strconv.ParseInt(s, 10, 64)
+}
+
+// ParseCommaf parses a string produced by Commaf.
+// It strips commas and returns the float64 value, or an error if the
+// string cannot be parsed.
+func ParseCommaf(s string) (float64, error) {
+	s = strings.ReplaceAll(s, ",", "")
+	return strconv.ParseFloat(s, 64)
+}
