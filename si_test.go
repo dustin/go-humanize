@@ -127,10 +127,25 @@ func BenchmarkParseSI(b *testing.B) {
 	}
 }
 
+// The Greek letter mu (U+03BC) looks identical to the SI micro sign
+// (U+00B5) and is often typed instead. ParseSI should accept it.
+func TestParseSIGreekMu(t *testing.T) {
+	got, unit, err := ParseSI("2.2 μF")
+	if err != nil {
+		t.Fatalf("ParseSI(Greek mu) returned err: %v", err)
+	}
+	if unit != "F" {
+		t.Errorf("unit = %q, want %q", unit, "F")
+	}
+	if math.Abs(1-(got/2.2e-6)) > 0.01 {
+		t.Errorf("got %v, want ~2.2e-6", got)
+	}
+}
+
 // There was a report that zeroes were being truncated incorrectly
 func TestBug106(t *testing.T) {
-	tests := []struct{
-		in float64
+	tests := []struct {
+		in   float64
 		want string
 	}{
 		{20.0, "20 U"},
@@ -138,8 +153,8 @@ func TestBug106(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		if got :=SIWithDigits(test.in, 0, "U") ;  got != test.want {
-			t.Errorf("on %f got %v, want %v", test.in, got, test.want);
+		if got := SIWithDigits(test.in, 0, "U"); got != test.want {
+			t.Errorf("on %f got %v, want %v", test.in, got, test.want)
 		}
 	}
 }

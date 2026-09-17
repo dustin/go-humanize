@@ -50,11 +50,21 @@ var minSIExponent, maxSIExponent = func() (float64, float64) {
 	return min, max
 }()
 
+// siParseAliases lets ParseSI accept extra spellings of prefixes that look
+// identical to the canonical ones in siPrefixTable. Output still uses the
+// canonical character; this is input-side only.
+var siParseAliases = map[string]float64{
+	"μ": 1e-6, // GREEK SMALL LETTER MU, often typed instead of µ (U+00B5)
+}
+
 // revfmap reverses the map and precomputes the power multiplier
 func revfmap(in map[float64]string) map[string]float64 {
 	rv := map[string]float64{}
 	for k, v := range in {
 		rv[v] = math.Pow(10, k)
+	}
+	for a, v := range siParseAliases {
+		rv[a] = v
 	}
 	return rv
 }
@@ -65,6 +75,9 @@ func init() {
 	ri := `^([\-0-9.]+)\s?([`
 	for _, v := range siPrefixTable {
 		ri += v
+	}
+	for a := range siParseAliases {
+		ri += a
 	}
 	ri += `]?)(.*)`
 
