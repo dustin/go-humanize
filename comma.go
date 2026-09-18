@@ -108,7 +108,7 @@ func Commaf(v float64) string {
 // e.g. CommafWithDigits(1000, 2) -> 1,000.00
 func CommafWithDigits(f float64, decimals int) string {
 	s := stripTrailingDigits(Commaf(f), decimals)
-	if decimals <= 0 {
+	if decimals <= 0 || math.IsNaN(f) || math.IsInf(f, 0) {
 		return s
 	}
 
