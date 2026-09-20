@@ -80,7 +80,6 @@ func humanateBytes(s uint64, base float64, minDigits int, sizes []string) string
 		return fmt.Sprintf("%d B", s)
 	}
 	e := math.Floor(logn(float64(s), base))
-	suffix := sizes[int(e)]
 	val := float64(s) / math.Pow(base, e)
 
 	// Determine how many decimal places to keep based on the unrounded
@@ -99,6 +98,15 @@ func humanateBytes(s uint64, base float64, minDigits int, sizes []string) string
 	if newIntDigits := countDigits(int64(val)); newIntDigits > intDigits {
 		digits = max(digits-(newIntDigits-intDigits), 0)
 	}
+
+	// A rounded value may now fit the next unit (1000 kB -> 1.0 MB).
+	// Recompute the precision for that unit without rounding the input again.
+	if val >= base && int(e)+1 < len(sizes) {
+		e++
+		val /= base
+		digits = max(minDigits-countDigits(int64(val)), 0)
+	}
+	suffix := sizes[int(e)]
 
 	ff := "%%.%df %%s"
 	f := fmt.Sprintf(ff, digits)
