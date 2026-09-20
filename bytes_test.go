@@ -116,13 +116,13 @@ func TestBytes(t *testing.T) {
 
 		{"bytes(1024)", Bytes(1024), "1.0 kB"},
 		{"bytes(9999)", Bytes(9999), "10 kB"},
-		{"bytes(1MB - 1)", Bytes(MByte - Byte), "1000 kB"},
+		{"bytes(1MB - 1)", Bytes(MByte - Byte), "1.0 MB"},
 
 		{"bytes(1MB)", Bytes(1024 * 1024), "1.0 MB"},
-		{"bytes(1GB - 1K)", Bytes(GByte - KByte), "1000 MB"},
+		{"bytes(1GB - 1K)", Bytes(GByte - KByte), "1.0 GB"},
 
 		{"bytes(1GB)", Bytes(GByte), "1.0 GB"},
-		{"bytes(1TB - 1M)", Bytes(TByte - MByte), "1000 GB"},
+		{"bytes(1TB - 1M)", Bytes(TByte - MByte), "1.0 TB"},
 		{"bytes(10MB)", Bytes(9999 * 1000), "10 MB"},
 
 		{"bytes(1TB)", Bytes(TByte), "1.0 TB"},
@@ -148,13 +148,13 @@ func TestBytes(t *testing.T) {
 		{"bytes(1023)", IBytes(1023), "1023 B"},
 
 		{"bytes(1024)", IBytes(1024), "1.0 KiB"},
-		{"bytes(1MB - 1)", IBytes(MiByte - IByte), "1024 KiB"},
+		{"bytes(1MB - 1)", IBytes(MiByte - IByte), "1.0 MiB"},
 
 		{"bytes(1MB)", IBytes(1024 * 1024), "1.0 MiB"},
-		{"bytes(1GB - 1K)", IBytes(GiByte - KiByte), "1024 MiB"},
+		{"bytes(1GB - 1K)", IBytes(GiByte - KiByte), "1.0 GiB"},
 
 		{"bytes(1GB)", IBytes(GiByte), "1.0 GiB"},
-		{"bytes(1TB - 1M)", IBytes(TiByte - MiByte), "1024 GiB"},
+		{"bytes(1TB - 1M)", IBytes(TiByte - MiByte), "1.0 TiB"},
 
 		{"bytes(1TB)", IBytes(TiByte), "1.0 TiB"},
 		{"bytes(1PB - 1T)", IBytes(PiByte - TiByte), "1023 TiB"},
@@ -178,6 +178,35 @@ func TestBytes(t *testing.T) {
 func BenchmarkParseBytes(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		ParseBytes("16.5 GB")
+	}
+}
+
+func TestBytesPromoteRoundedUnits(t *testing.T) {
+	tests := []struct {
+		name string
+		got  string
+		want string
+	}{
+		{"SI below boundary", Bytes(999499), "999 kB"},
+		{"SI at boundary", Bytes(999500), "1.0 MB"},
+		{"SI below next unit", Bytes(MByte - 1), "1.0 MB"},
+		{"IEC below boundary", IBytes(MiByte - 513), "1023 KiB"},
+		{"IEC at boundary", IBytes(MiByte - 512), "1.0 MiB"},
+		{"IEC below next unit", IBytes(MiByte - 1), "1.0 MiB"},
+		{"three digits", BytesN(999500, 3), "1.00 MB"},
+		{"four digits below boundary", BytesN(999949, 4), "999.9 kB"},
+		{"four digits at boundary", BytesN(999950, 4), "1.000 MB"},
+		{"IEC five digits", IBytesN(MiByte-1, 5), "1.0000 MiB"},
+		{"no fractional digits", BytesN(999500, 0), "1 MB"},
+		{"highest SI unit", Bytes(^uint64(0)), "18 EB"},
+		{"highest IEC unit", IBytes(^uint64(0)), "16 EiB"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.got != tt.want {
+				t.Errorf("got %q, want %q", tt.got, tt.want)
+			}
+		})
 	}
 }
 
