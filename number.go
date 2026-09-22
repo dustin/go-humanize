@@ -53,12 +53,12 @@ var (
 // See examples: http://play.golang.org/p/LXc1Ddm1lJ
 //
 // Examples of format strings, given n = 12345.6789:
-// "#,###.##" => "12,345.67"
-// "#,###." => "12,345"
-// "#,###" => "12345,678"
+// "#,###.##" => "12,345.68"
+// "#,###." => "12,346"
+// "#,###" => "12345,679"
 // "#\u202F###,##" => "12 345,68"
-// "#.###,###### => 12.345,678900
-// "" (aka default format) => 12,345.67
+// "#.###,######" => "12.345,678900"
+// "" (aka default format) => "12,345.68"
 //
 // The highest precision allowed is 9 digits after the decimal symbol.
 // There is also a version for integer number, FormatInteger(),
