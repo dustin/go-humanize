@@ -115,6 +115,12 @@ func humanateBigBytes(s, base *big.Int, sizes []string) string {
 	}
 	c := (&big.Int{}).Set(s)
 	val, mag := oomm(c, base, len(sizes)-1)
+	// Values this close to the next unit round up when formatted without
+	// decimals. Promote the suffix too, unless it is already the last one.
+	if val >= float64(base.Int64())-0.5 && mag+1 < len(sizes) {
+		val = 1
+		mag++
+	}
 	suffix := sizes[mag]
 	f := "%.0f %s"
 	if val < 10 {
