@@ -1,0 +1,64 @@
+# Runs fuzz targets. Fuzzing is expensive, so this only runs on pushes to
+# master (i.e. once per merge) rather than on every commit or pull request.
+# It can also be triggered manually via workflow_dispatch.
+
+name: Fuzz
+
+on:
+  push:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+
+  discover-fuzz-targets:
+    runs-on: ubuntu-latest
+    outputs:
+      targets: ${{ steps.discover.outputs.targets }}
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+    - name: Set up Go
+      uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+      with:
+        go-version: "1.27"
+
+    - name: Discover fuzz tests
+      id: discover
+      run: |
+        targets=$(go list ./... | while read -r pkg; do
+          go test -list '^Fuzz' "$pkg" | grep '^Fuzz' | while read -r name; do
+            jq -n --arg pkg "$pkg" --arg name "$name" '{package: $pkg, name: $name}'
+          done
+        done | jq -s -c .)
+        echo "targets=$targets" >> "$GITHUB_OUTPUT"
+
+  fuzz:
+    needs: discover-fuzz-targets
+    if: needs.discover-fuzz-targets.outputs.targets != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ${{ fromJson(needs.discover-fuzz-targets.outputs.targets) }}
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+    - name: Set up Go
+      uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+      with:
+        go-version: "1.27"
+
+    - name: Fuzz ${{ matrix.target.name }}
+      run: go test -run=${{ matrix.target.name }} -fuzz=^${{ matrix.target.name }}$ -fuzztime=30s ${{ matrix.target.package }}
+
+    - name: Upload failing corpus entry
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: fuzz-failure-${{ matrix.target.name }}
+        path: testdata/fuzz/${{ matrix.target.name }}
+        if-no-files-found: ignore
