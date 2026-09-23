@@ -45,3 +45,21 @@ func TestBigCommafs(t *testing.T) {
 		{"-Inf", BigCommaf(big.NewFloat(math.Inf(-1))), "-Inf"},
 	}.validate(t)
 }
+
+func xTestBigCommafDoesNotModifyArgument(t *testing.T) {
+	f := big.NewFloat(-1234567.5)
+	want := new(big.Float).Copy(f)
+
+	if got, exp := BigCommaf(f), "-1,234,567.5"; got != exp {
+		t.Errorf("BigCommaf(-1234567.5) = %q, want %q", got, exp)
+	}
+
+	if f.Cmp(want) != 0 {
+		t.Errorf("BigCommaf modified its argument: got %v, want %v", f, want)
+	}
+
+	// A second call on the same value should produce the same result.
+	if got, exp := BigCommaf(f), "-1,234,567.5"; got != exp {
+		t.Errorf("second BigCommaf(-1234567.5) = %q, want %q", got, exp)
+	}
+}

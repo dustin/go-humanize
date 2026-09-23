@@ -22,7 +22,7 @@ func BigCommaf(v *big.Float) string {
 	buf := &bytes.Buffer{}
 	if v.Sign() < 0 {
 		buf.Write([]byte{'-'})
-		v.Abs(v)
+		v = new(big.Float).Abs(v)
 	}
 
 	comma := []byte{','}
