@@ -215,3 +215,39 @@ func TestComputeSIPreservesMagnitude(t *testing.T) {
 		}
 	}
 }
+
+// Infinities and NaN have no magnitude a prefix can name. Clamping the
+// exponent to the table must not pin them to its last entry, or SI prints
+// +Inf as "+Inf Qx", as if it were a finite number scaled by 10^30.
+func TestComputeSINonFinite(t *testing.T) {
+	tests := []struct {
+		name string
+		in   float64
+		si   string
+		siwd string
+	}{
+		{"+Inf", math.Inf(1), "+Inf x", "+Inf x"},
+		{"-Inf", math.Inf(-1), "-Inf x", "-Inf x"},
+		{"NaN", math.NaN(), "NaN x", "NaN x"},
+	}
+
+	for _, test := range tests {
+		value, prefix := ComputeSI(test.in)
+		if prefix != "" {
+			t.Errorf("%s: ComputeSI prefix = %q, want \"\"", test.name, prefix)
+		}
+		if math.IsNaN(test.in) {
+			if !math.IsNaN(value) {
+				t.Errorf("%s: ComputeSI value = %g, want NaN", test.name, value)
+			}
+		} else if value != test.in {
+			t.Errorf("%s: ComputeSI value = %g, want %g", test.name, value, test.in)
+		}
+		if got := SI(test.in, "x"); got != test.si {
+			t.Errorf("%s: SI = %q, want %q", test.name, got, test.si)
+		}
+		if got := SIWithDigits(test.in, 2, "x"); got != test.siwd {
+			t.Errorf("%s: SIWithDigits = %q, want %q", test.name, got, test.siwd)
+		}
+	}
+}
