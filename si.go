@@ -95,6 +95,11 @@ func ComputeSI(input float64) (float64, string) {
 	if input == 0 {
 		return 0, ""
 	}
+	// Infinities and NaN have no magnitude for a prefix to name; without
+	// this the clamp below would label an infinity with the largest prefix.
+	if math.IsInf(input, 0) || math.IsNaN(input) {
+		return input, ""
+	}
 	mag := math.Abs(input)
 	exponent := math.Floor(logn(mag, 10))
 	exponent = math.Floor(exponent/3) * 3
