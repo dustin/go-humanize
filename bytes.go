@@ -177,7 +177,7 @@ func ParseBytes(s string) (uint64, error) {
 		num = strings.Replace(num, ",", "", -1)
 	}
 
-	f, err := strconv.ParseFloat(num, 64)
+	_, err := strconv.ParseFloat(num, 64)
 	if err != nil {
 		return 0, err
 	}
@@ -196,11 +196,16 @@ func ParseBytes(s string) (uint64, error) {
 				return 0, fmt.Errorf("too large: %v", s)
 			}
 		}
-		f *= float64(m)
-		if f >= math.MaxUint64 {
+		// Use the existing exact decimal parser before truncating fractional
+		// bytes. Binary floating point can round 1.001 kB down to 1000 bytes.
+		value, err := ParseBigBytes(s)
+		if err != nil {
+			return 0, err
+		}
+		if !value.IsUint64() {
 			return 0, fmt.Errorf("too large: %v", s)
 		}
-		return uint64(f), nil
+		return value.Uint64(), nil
 	}
 
 	return 0, fmt.Errorf("unhandled size name: %v", extra)
