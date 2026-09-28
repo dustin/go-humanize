@@ -57,7 +57,7 @@ jobs:
 
     - name: Upload failing corpus entry
       if: failure()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: fuzz-failure-${{ matrix.target.name }}
         path: testdata/fuzz/${{ matrix.target.name }}
