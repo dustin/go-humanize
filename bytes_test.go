@@ -116,13 +116,16 @@ func TestBytes(t *testing.T) {
 
 		{"bytes(1024)", Bytes(1024), "1.0 kB"},
 		{"bytes(9999)", Bytes(9999), "10 kB"},
-		{"bytes(1MB - 1)", Bytes(MByte - Byte), "1000 kB"},
+		{"bytes(999499)", Bytes(999499), "999 kB"},
+		{"bytes(999500)", Bytes(999500), "1.0 MB"},
+		{"bytes(999950)", Bytes(999950), "1.0 MB"},
+		{"bytes(1MB - 1)", Bytes(MByte - Byte), "1.0 MB"},
 
 		{"bytes(1MB)", Bytes(1024 * 1024), "1.0 MB"},
-		{"bytes(1GB - 1K)", Bytes(GByte - KByte), "1000 MB"},
+		{"bytes(1GB - 1K)", Bytes(GByte - KByte), "1.0 GB"},
 
 		{"bytes(1GB)", Bytes(GByte), "1.0 GB"},
-		{"bytes(1TB - 1M)", Bytes(TByte - MByte), "1000 GB"},
+		{"bytes(1TB - 1M)", Bytes(TByte - MByte), "1.0 TB"},
 		{"bytes(10MB)", Bytes(9999 * 1000), "10 MB"},
 
 		{"bytes(1TB)", Bytes(TByte), "1.0 TB"},
@@ -135,6 +138,8 @@ func TestBytes(t *testing.T) {
 		// Overflows.
 		// {"bytes(1EB - 1P)", Bytes((KByte*EByte)-PByte), "1023EB"},
 
+		{"bytesN(999950, 1)", BytesN(999950, 1), "1 MB"},
+		{"bytesN(999950, 3)", BytesN(999950, 3), "1.00 MB"},
 		{"bytesN(1234, 3)", BytesN(1234, 3), "1.23 kB"},
 
 		// Bug #103: floating point error caused double rounding to bump
@@ -148,13 +153,15 @@ func TestBytes(t *testing.T) {
 		{"bytes(1023)", IBytes(1023), "1023 B"},
 
 		{"bytes(1024)", IBytes(1024), "1.0 KiB"},
-		{"bytes(1MB - 1)", IBytes(MiByte - IByte), "1024 KiB"},
+		{"bytes(1048063)", IBytes(1048063), "1023 KiB"},
+		{"bytes(1048064)", IBytes(1048064), "1.0 MiB"},
+		{"bytes(1MiB - 1)", IBytes(MiByte - IByte), "1.0 MiB"},
 
-		{"bytes(1MB)", IBytes(1024 * 1024), "1.0 MiB"},
-		{"bytes(1GB - 1K)", IBytes(GiByte - KiByte), "1024 MiB"},
+		{"bytes(1MiB)", IBytes(1024 * 1024), "1.0 MiB"},
+		{"bytes(1GiB - 1Ki)", IBytes(GiByte - KiByte), "1.0 GiB"},
 
-		{"bytes(1GB)", IBytes(GiByte), "1.0 GiB"},
-		{"bytes(1TB - 1M)", IBytes(TiByte - MiByte), "1024 GiB"},
+		{"bytes(1GiB)", IBytes(GiByte), "1.0 GiB"},
+		{"bytes(1TiB - 1Mi)", IBytes(TiByte - MiByte), "1.0 TiB"},
 
 		{"bytes(1TB)", IBytes(TiByte), "1.0 TiB"},
 		{"bytes(1PB - 1T)", IBytes(PiByte - TiByte), "1023 TiB"},
