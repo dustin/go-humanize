@@ -24,5 +24,19 @@ func TestOrdinals(t *testing.T) {
 		{"211", Ordinal(211), "211th"},
 		{"212", Ordinal(212), "212th"},
 		{"213", Ordinal(213), "213th"},
+		// Negatives: Go's % keeps the dividend's sign, so suffix selection
+		// must use the absolute value.
+		{"-1", Ordinal(-1), "-1st"},
+		{"-2", Ordinal(-2), "-2nd"},
+		{"-3", Ordinal(-3), "-3rd"},
+		{"-4", Ordinal(-4), "-4th"},
+		{"-11", Ordinal(-11), "-11th"},
+		{"-12", Ordinal(-12), "-12th"},
+		{"-13", Ordinal(-13), "-13th"},
+		{"-21", Ordinal(-21), "-21st"},
+		{"-22", Ordinal(-22), "-22nd"},
+		{"-23", Ordinal(-23), "-23rd"},
+		{"-101", Ordinal(-101), "-101st"},
+		{"-111", Ordinal(-111), "-111th"},
 	}.validate(t)
 }
