@@ -190,6 +190,37 @@ func TestVeryVeryBigBytes(t *testing.T) {
 	}
 }
 
+func TestBigBytesBeyondInt64(t *testing.T) {
+	// Past the largest prefix the quotient is no longer reduced, so it can
+	// exceed an int64. These used to come back negative or as 0.0.
+	tests := []struct {
+		in, exp, iexp string
+	}{
+		// 2^63 QB
+		{"9223372036854775808000000000000000000000000000000",
+			"9223372036854775808 QB", "7275957614183426048 QiB"},
+		// 2^64 QB
+		{"18446744073709551616000000000000000000000000000000",
+			"18446744073709551616 QB", "14551915228366852096 QiB"},
+		// 2^164 = 2^64 QiB
+		{"23384026197294446691258957323460528314494920687616",
+			"23384026197294448640 QB", "18446744073709551616 QiB"},
+	}
+
+	for _, test := range tests {
+		b, ok := (&big.Int{}).SetString(test.in, 10)
+		if !ok {
+			t.Fatalf("Couldn't parse %q", test.in)
+		}
+		if s := BigBytes(b); s != test.exp {
+			t.Errorf("Expected %q for %v, got %q", test.exp, test.in, s)
+		}
+		if s := BigIBytes(b); s != test.iexp {
+			t.Errorf("Expected %q for %v, got %q", test.iexp, test.in, s)
+		}
+	}
+}
+
 func TestParseVeryBig(t *testing.T) {
 	tests := []struct {
 		in  string
