@@ -118,9 +118,10 @@ func ComputeSI(input float64) (float64, string) {
 
 	value := mag / math.Pow(10, exponent)
 
-	// Handle special case where value is exactly 1000.0
+	// logn can come out a hair under a multiple of 3 for values at or just
+	// above a power of 1000, which leaves value at 1000 or a few ulps over.
 	// Should return 1 M instead of 1000 k
-	if value == 1000.0 && exponent+3 <= maxSIExponent {
+	if value >= 1000.0 && exponent+3 <= maxSIExponent {
 		exponent += 3
 		value = mag / math.Pow(10, exponent)
 	}
