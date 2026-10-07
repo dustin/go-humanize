@@ -30,6 +30,13 @@ func TestFormatFloat(t *testing.T) {
 		{"negative int64 boundary", "#,###.##", -9223372036854775808, "-9,223,372,036,854,775,808.00"},
 		{"large integer", "#.", 1e20, "100000000000000000000"},
 		{"large integer with sign", "+#.###,##", 1e20, "+100.000.000.000.000.000.000,00"},
+		{"carry into the last digit", "#,###.#", 8894.75, "8,894.8"},
+		{"carry into the last digit, negative", "#,###.#", -8894.75, "-8,894.8"},
+		{"just above a tie", "#,###.##", 71.575, "71.58"},
+		{"exact tie rounds up", "#,###.##", 945.125, "945.13"},
+		{"exact tie rounds up, small", "#,###.##", 0.125, "0.13"},
+		{"exact tie rounds up, large", "#,###.#", 731701778190334.75, "731,701,778,190,334.8"},
+		{"just below a tie", "#,###.##", 1.005, "1.00"},
 		{"#\u202f###,##", "#\u202f###,##", 12345.6789, "12 345,68"},
 
 		// special cases
