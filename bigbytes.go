@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/big"
 	"strings"
-	"unicode"
 )
 
 var (
@@ -153,16 +152,19 @@ func BigIBytes(s *big.Int) string {
 // ParseBigBytes("42 MB") -> 42000000, nil
 // ParseBigBytes("42 mib") -> 44040192, nil
 func ParseBigBytes(s string) (*big.Int, error) {
+	// Scan only ASCII digits. The big.Rat scanned below cannot read a decimal
+	// digit from any other script, and counting runes here while indexing s
+	// by byte would cut the string inside a UTF-8 sequence.
 	lastDigit := 0
 	hasComma := false
-	for _, r := range s {
-		if !(unicode.IsDigit(r) || r == '.' || r == ',') {
+	for ; lastDigit < len(s); lastDigit++ {
+		c := s[lastDigit]
+		if !('0' <= c && c <= '9' || c == '.' || c == ',') {
 			break
 		}
-		if r == ',' {
+		if c == ',' {
 			hasComma = true
 		}
-		lastDigit++
 	}
 
 	num := s[:lastDigit]

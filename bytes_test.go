@@ -83,6 +83,33 @@ func TestByteErrors(t *testing.T) {
 	}
 }
 
+// A decimal digit outside ASCII is not something strconv.ParseFloat can read,
+// so the number ends in front of it and the rest of the input is reported as
+// written rather than cut inside its UTF-8 encoding.
+func TestByteParsingNonASCIIDigits(t *testing.T) {
+	tests := []struct {
+		in  string
+		exp string
+	}{
+		{"1\u0662 kb", "unhandled size name: \u0662 kb"},
+		{"12\u0663 mb", "unhandled size name: \u0663 mb"},
+		{"1\u0662", "unhandled size name: \u0662"},
+	}
+
+	for _, p := range tests {
+		got, err := ParseBytes(p.in)
+		if err == nil {
+			t.Errorf("Expected error for %q, got %v", p.in, got)
+		} else if err.Error() != p.exp {
+			t.Errorf("Expected %q for %q, got %q", p.exp, p.in, err)
+		}
+	}
+
+	if got, err := ParseBytes("\uff11 kb"); err == nil {
+		t.Errorf("Expected error for a leading non-ASCII digit, got %v", got)
+	}
+}
+
 func TestParseBytesExactIntegers(t *testing.T) {
 	// Whole-number byte counts must be parsed exactly, including values a
 	// float64 cannot represent and the full uint64 range.
