@@ -142,6 +142,23 @@ func TestBytes(t *testing.T) {
 		{"bytes(31350000)", Bytes(31350000), "31 MB"},
 		{"bytes(31450000)", Bytes(31450000), "31 MB"},
 
+		// Issue #127: threshold rounding should advance unit magnitude
+		{"bytes(999499)", Bytes(999499), "999 kB"},
+		{"bytes(999500)", Bytes(999500), "1.0 MB"},
+		{"bytes(999950)", Bytes(999950), "1.0 MB"},
+		{"bytes(999999)", Bytes(999999), "1.0 MB"},
+		{"bytes(1000000)", Bytes(1000000), "1.0 MB"},
+		{"bytes(1023950)", Bytes(1023950), "1.0 MB"},
+		{"bytesN(999499, 3)", BytesN(999499, 3), "999 kB"},
+		{"bytesN(999500, 3)", BytesN(999500, 3), "1.00 MB"},
+		{"bytesN(999949, 4)", BytesN(999949, 4), "999.9 kB"},
+		{"bytesN(999950, 4)", BytesN(999950, 4), "1.000 MB"},
+		{"bytesN(999999, 4)", BytesN(999999, 4), "1.000 MB"},
+		{"bytes(GByte - 1)", Bytes(GByte - 1), "1.0 GB"},
+		{"bytes(TByte - 1)", Bytes(TByte - 1), "1.0 TB"},
+		{"bytes(PByte - 1)", Bytes(PByte - 1), "1.0 PB"},
+		{"bytes(EByte - 1)", Bytes(EByte - 1), "1.0 EB"},
+
 		{"bytes(0)", IBytes(0), "0 B"},
 		{"bytes(1)", IBytes(1), "1 B"},
 		{"bytes(803)", IBytes(803), "803 B"},
@@ -165,6 +182,22 @@ func TestBytes(t *testing.T) {
 		{"bytes(1EiB)", IBytes(EiByte), "1.0 EiB"},
 		// Overflows.
 		// {"bytes(1EB - 1P)", IBytes((KIByte*EIByte)-PiByte), "1023EB"},
+
+		// Issue #127 (IEC): threshold rounding should advance unit magnitude
+		{"ibytes(1023950)", IBytes(1023950), "1000 KiB"},
+		{"ibytes(1048063)", IBytes(1048063), "1023 KiB"},
+		{"ibytes(1048064)", IBytes(1048064), "1.0 MiB"},
+		{"ibytes(1048500)", IBytes(1048500), "1.0 MiB"},
+		{"ibytes(1048575)", IBytes(1048575), "1.0 MiB"},
+		{"ibytes(1048576)", IBytes(1048576), "1.0 MiB"},
+		{"ibytesN(1048063, 4)", IBytesN(1048063, 4), "1023 KiB"},
+		{"ibytesN(1048064, 4)", IBytesN(1048064, 4), "1.000 MiB"},
+		{"ibytesN(1048575, 4)", IBytesN(1048575, 4), "1.000 MiB"},
+		{"ibytesN(1048575, 5)", IBytesN(1048575, 5), "1.0000 MiB"},
+		{"ibytes(GiByte - 1)", IBytes(GiByte - 1), "1.0 GiB"},
+		{"ibytes(TiByte - 1)", IBytes(TiByte - 1), "1.0 TiB"},
+		{"ibytes(PiByte - 1)", IBytes(PiByte - 1), "1.0 PiB"},
+		{"ibytes(EiByte - 1)", IBytes(EiByte - 1), "1.0 EiB"},
 
 		{"bytes(5.5GiB)", IBytes(5.5 * GiByte), "5.5 GiB"},
 
