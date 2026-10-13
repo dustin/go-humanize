@@ -98,6 +98,17 @@ func TestSI(t *testing.T) {
 	}
 }
 
+func TestParseSIRejectsTrailingLines(t *testing.T) {
+	for _, input := range []string{"2 kW\n3 MW", "2 kW\n", "2B\n3", "2 kW\r\n3 MW"} {
+		t.Run(input, func(t *testing.T) {
+			value, unit, err := ParseSI(input)
+			if err == nil {
+				t.Errorf("ParseSI(%q) = (%v, %q, nil), want an error", input, value, unit)
+			}
+		})
+	}
+}
+
 func TestSIWithDigits(t *testing.T) {
 	tests := []struct {
 		name      string
