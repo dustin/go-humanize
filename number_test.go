@@ -54,6 +54,24 @@ func TestFormatFloat(t *testing.T) {
 		t.Errorf("On %v (%v, %v), got %v, wanted %v",
 			"integerTest", "#", 12345, got, "12345.000000000")
 	}
+
+	// Test FormatFloatNoTrailingZero and FormatIntegerNoTrailingZero
+	noTrailingTests := []TestStruct{
+		{"no trailing zero with decimals", "#,###.##", 12345.6, "12,345.6"},
+		{"no trailing zero whole number", "#,###.##", 12345.0, "12,345"},
+		{"no trailing zero retains significant digits", "#,###.##", 12345.68, "12,345.68"},
+		{"no trailing zero multiple fractional zeros", "#.###,######", 12345.6789, "12.345,6789"},
+	}
+	for _, test := range noTrailingTests {
+		got := FormatFloatNoTrailingZero(test.format, test.num)
+		if got != test.formatted {
+			t.Errorf("On %v (%v, %v), got %v, wanted %v",
+				test.name, test.format, test.num, got, test.formatted)
+		}
+	}
+	if gotInt := FormatIntegerNoTrailingZero("#", 12345); gotInt != "12345" {
+		t.Errorf("FormatIntegerNoTrailingZero got %v, wanted %v", gotInt, "12345")
+	}
 	// Test the things that could panic
 	panictests := []TestStruct{
 		{"FormatFloat(): invalid positive sign directive", "-", 12345.6789, "12,345.68"},

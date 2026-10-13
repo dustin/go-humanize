@@ -11,6 +11,7 @@ Source: https://gist.github.com/gorhill/5285193
 import (
 	"math"
 	"strconv"
+	"strings"
 )
 
 var (
@@ -64,6 +65,36 @@ var (
 // There is also a version for integer number, FormatInteger(),
 // which is convenient for calls within template.
 func FormatFloat(format string, n float64) string {
+	return formatFloat(format, n, false)
+}
+
+// FormatFloatNoTrailingZero produces a formatted number as string based on the user-specified
+// criteria, omitting unneeded trailing decimal zeros.
+//
+// Usage: s := FormatFloatNoTrailingZero(format, n)
+//
+// Examples of format strings, given n = 12345.6789:
+// "#,###.##" => "12,345.68"
+// "#.###,######" => "12.345,6789"
+//
+// See FormatFloat.
+func FormatFloatNoTrailingZero(format string, val float64) string {
+	return formatFloat(format, val, true)
+}
+
+// FormatInteger produces a formatted number as string.
+// See FormatFloat.
+func FormatInteger(format string, n int) string {
+	return FormatFloat(format, float64(n))
+}
+
+// FormatIntegerNoTrailingZero produces a formatted number as string without trailing zeros.
+// See FormatFloatNoTrailingZero.
+func FormatIntegerNoTrailingZero(format string, n int) string {
+	return FormatFloatNoTrailingZero(format, float64(n))
+}
+
+func formatFloat(format string, n float64, trimTrailingZeros bool) string {
 	// Special cases:
 	//   NaN = "NaN"
 	//   +Inf = "+Infinity"
@@ -183,11 +214,12 @@ func FormatFloat(format string, n float64) string {
 		fracStr = "000000000000000"[:precision-len(fracStr)] + fracStr
 	}
 
-	return signStr + intStr + decimalStr + fracStr
-}
+	if trimTrailingZeros {
+		fracStr = strings.TrimRight(fracStr, "0")
+		if len(fracStr) == 0 {
+			return signStr + intStr
+		}
+	}
 
-// FormatInteger produces a formatted number as string.
-// See FormatFloat.
-func FormatInteger(format string, n int) string {
-	return FormatFloat(format, float64(n))
+	return signStr + intStr + decimalStr + fracStr
 }
