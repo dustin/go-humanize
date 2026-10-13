@@ -79,7 +79,7 @@ func init() {
 	for a := range siParseAliases {
 		ri += a
 	}
-	ri += `]?)(.*)`
+	ri += `]?)(.*)$`
 
 	riParseRegex = regexp.MustCompile(ri)
 }
