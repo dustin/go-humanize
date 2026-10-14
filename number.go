@@ -10,35 +10,9 @@ Source: https://gist.github.com/gorhill/5285193
 
 import (
 	"math"
+	"math/big"
 	"strconv"
-)
-
-var (
-	renderFloatPrecisionMultipliers = [...]float64{
-		1,
-		10,
-		100,
-		1000,
-		10000,
-		100000,
-		1000000,
-		10000000,
-		100000000,
-		1000000000,
-	}
-
-	renderFloatPrecisionRounders = [...]float64{
-		0.5,
-		0.05,
-		0.005,
-		0.0005,
-		0.00005,
-		0.000005,
-		0.0000005,
-		0.00000005,
-		0.000000005,
-		0.0000000005,
-	}
+	"strings"
 )
 
 // FormatFloat produces a formatted number as string based on the following user-specified criteria:
@@ -157,11 +131,7 @@ func FormatFloat(format string, n float64) string {
 		n = 0.0
 	}
 
-	// split number into integer and fractional parts
-	intf, fracf := math.Modf(n + renderFloatPrecisionRounders[precision])
-
-	// generate integer part string
-	intStr := strconv.FormatFloat(intf, 'f', 0, 64)
+	intStr, fracStr, _ := strings.Cut(formatHalfUp(n, precision), ".")
 
 	// add thousand separator if required
 	if len(thousandStr) > 0 {
@@ -176,14 +146,18 @@ func FormatFloat(format string, n float64) string {
 		return signStr + intStr
 	}
 
-	// generate fractional part
-	fracStr := strconv.Itoa(int(fracf * renderFloatPrecisionMultipliers[precision]))
-	// may need padding
-	if len(fracStr) < precision {
-		fracStr = "000000000000000"[:precision-len(fracStr)] + fracStr
-	}
-
 	return signStr + intStr + decimalStr + fracStr
+}
+
+// formatHalfUp formats n with precision decimals, rounding halves up.
+func formatHalfUp(n float64, precision int) string {
+	// strconv rounds the exact binary value correctly, but breaks ties to even.
+	if s := strconv.FormatFloat(n, 'f', precision+1, 64); s[len(s)-1] == '5' {
+		if r, _ := new(big.Rat).SetString(s); r.Cmp(new(big.Rat).SetFloat64(n)) == 0 {
+			return r.FloatString(precision)
+		}
+	}
+	return strconv.FormatFloat(n, 'f', precision, 64)
 }
 
 // FormatInteger produces a formatted number as string.
