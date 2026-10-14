@@ -3,6 +3,7 @@ package humanize
 import (
 	"fmt"
 	"math"
+	"math/big"
 	"math/bits"
 	"strconv"
 	"strings"
@@ -185,8 +186,7 @@ func ParseBytes(s string) (uint64, error) {
 		num = strings.Replace(num, ",", "", -1)
 	}
 
-	f, err := strconv.ParseFloat(num, 64)
-	if err != nil {
+	if _, err := strconv.ParseFloat(num, 64); err != nil {
 		return 0, err
 	}
 
@@ -204,11 +204,18 @@ func ParseBytes(s string) (uint64, error) {
 				return 0, fmt.Errorf("too large: %v", s)
 			}
 		}
-		f *= float64(m)
-		if f >= math.MaxUint64 {
+
+		// Fractional inputs hit the same float64 limit: a byte count above
+		// 2^53 is rounded, so "1.1 EB" came back as 1100000000000000128
+		// instead of 1100000000000000000. Multiply as a rational (as
+		// ParseBigBytes does) and narrow once. num is already validated above.
+		val, _ := new(big.Rat).SetString(num)
+		val.Mul(val, new(big.Rat).SetUint64(m))
+		rv := new(big.Int).Quo(val.Num(), val.Denom())
+		if !rv.IsUint64() {
 			return 0, fmt.Errorf("too large: %v", s)
 		}
-		return uint64(f), nil
+		return rv.Uint64(), nil
 	}
 
 	return 0, fmt.Errorf("unhandled size name: %v", extra)

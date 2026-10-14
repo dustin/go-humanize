@@ -107,6 +107,32 @@ func TestParseBytesExactIntegers(t *testing.T) {
 	}
 }
 
+func TestParseBytesExactFractions(t *testing.T) {
+	// Fractional inputs whose exact value exceeds 2^53 must not be rounded
+	// through float64 (e.g. "1.1 EB" used to parse to 1100000000000000128).
+	tests := []struct {
+		in  string
+		exp uint64
+	}{
+		{"1.1 EB", 1100000000000000000},
+		{"18.4 eb", 18400000000000000000},
+		{"15.9999 eb", 15999900000000000000},
+		{"10000000010000000000.", 10000000010000000000},
+		{"1.5 kb", 1500},
+		{"1.9 b", 1}, // fractional bytes truncate, as before
+	}
+	for _, p := range tests {
+		got, err := ParseBytes(p.in)
+		if err != nil {
+			t.Errorf("Couldn't parse %v: %v", p.in, err)
+			continue
+		}
+		if got != p.exp {
+			t.Errorf("Expected %d for %q, got %d", p.exp, p.in, got)
+		}
+	}
+}
+
 func TestBytes(t *testing.T) {
 	testList{
 		{"bytes(0)", Bytes(0), "0 B"},
