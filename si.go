@@ -118,9 +118,10 @@ func ComputeSI(input float64) (float64, string) {
 
 	value := mag / math.Pow(10, exponent)
 
-	// Handle special case where value is exactly 1000.0
-	// Should return 1 M instead of 1000 k
-	if value == 1000.0 && exponent+3 <= maxSIExponent {
+	// Should return 1 M instead of 1000 k. value can reach 1000 when logn
+	// comes out a hair under a multiple of 3, and a value just under 1000
+	// still prints as 1000 once SI and SIWithDigits round it to 6 decimals.
+	if math.Round(value*1e6) >= 1000e6 && exponent+3 <= maxSIExponent {
 		exponent += 3
 		value = mag / math.Pow(10, exponent)
 	}
