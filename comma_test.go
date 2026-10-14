@@ -291,3 +291,21 @@ func TestParseCommafErrors(t *testing.T) {
 		}
 	}
 }
+
+func TestCommafWithDigitsSpecialValues(t *testing.T) {
+	tests := []struct {
+		value float64
+		want  string
+	}{
+		{math.Inf(1), "+Inf"},
+		{math.Inf(-1), "-Inf"},
+		{math.NaN(), "NaN"},
+	}
+	for _, test := range tests {
+		for _, decimals := range []int{-1, 0, 2} {
+			if got := CommafWithDigits(test.value, decimals); got != test.want {
+				t.Errorf("CommafWithDigits(%v, %d) = %q, want %q", test.value, decimals, got, test.want)
+			}
+		}
+	}
+}
