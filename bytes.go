@@ -6,7 +6,6 @@ import (
 	"math/bits"
 	"strconv"
 	"strings"
-	"unicode"
 )
 
 // IEC Sizes.
@@ -168,16 +167,19 @@ func IBytesN(s uint64, n int) string {
 // ParseBytes("42 MB") -> 42000000, nil
 // ParseBytes("42 mib") -> 44040192, nil
 func ParseBytes(s string) (uint64, error) {
+	// Scan only ASCII digits. strconv.ParseFloat below cannot read a decimal
+	// digit from any other script, and counting runes here while indexing s
+	// by byte would cut the string inside a UTF-8 sequence.
 	lastDigit := 0
 	hasComma := false
-	for _, r := range s {
-		if !(unicode.IsDigit(r) || r == '.' || r == ',') {
+	for ; lastDigit < len(s); lastDigit++ {
+		c := s[lastDigit]
+		if !('0' <= c && c <= '9' || c == '.' || c == ',') {
 			break
 		}
-		if r == ',' {
+		if c == ',' {
 			hasComma = true
 		}
-		lastDigit++
 	}
 
 	num := s[:lastDigit]
