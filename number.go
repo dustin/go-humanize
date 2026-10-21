@@ -78,12 +78,56 @@ func FormatFloat(format string, n float64) string {
 		return "-Infinity"
 	}
 
-	// default format
-	precision := 2
-	decimalStr := "."
-	thousandStr := ","
-	positiveStr := ""
+	precision, decimalStr, thousandStr, positiveStr := parseNumberFormat(format)
 	negativeStr := "-"
+
+	// generate sign part
+	var signStr string
+	if n >= 0.000000001 {
+		signStr = positiveStr
+	} else if n <= -0.000000001 {
+		signStr = negativeStr
+		n = -n
+	} else {
+		signStr = ""
+		n = 0.0
+	}
+
+	// split number into integer and fractional parts
+	intf, fracf := math.Modf(n + renderFloatPrecisionRounders[precision])
+
+	// generate integer part string
+	intStr := strconv.FormatFloat(intf, 'f', 0, 64)
+
+	// add thousand separator if required
+	if len(thousandStr) > 0 {
+		for i := len(intStr); i > 3; {
+			i -= 3
+			intStr = intStr[:i] + thousandStr + intStr[i:]
+		}
+	}
+
+	// no fractional part, we can leave now
+	if precision == 0 {
+		return signStr + intStr
+	}
+
+	// generate fractional part
+	fracStr := strconv.Itoa(int(fracf * renderFloatPrecisionMultipliers[precision]))
+	// may need padding
+	if len(fracStr) < precision {
+		fracStr = "000000000000000"[:precision-len(fracStr)] + fracStr
+	}
+
+	return signStr + intStr + decimalStr + fracStr
+}
+
+func parseNumberFormat(format string) (precision int, decimalStr, thousandStr, positiveStr string) {
+	// default format
+	precision = 2
+	decimalStr = "."
+	thousandStr = ","
+	positiveStr = ""
 
 	if len(format) > 0 {
 		format := []rune(format)
@@ -145,49 +189,30 @@ func FormatFloat(format string, n float64) string {
 		}
 	}
 
-	// generate sign part
-	var signStr string
-	if n >= 0.000000001 {
+	return
+}
+
+// FormatInteger produces a formatted number as string.
+// See FormatFloat.
+func FormatInteger(format string, n int) string {
+	precision, decimalStr, thousandStr, positiveStr := parseNumberFormat(format)
+	intStr := strconv.Itoa(n)
+	signStr := ""
+	if n < 0 {
+		signStr = "-"
+		intStr = intStr[1:]
+	} else if n > 0 {
 		signStr = positiveStr
-	} else if n <= -0.000000001 {
-		signStr = negativeStr
-		n = -n
-	} else {
-		signStr = ""
-		n = 0.0
 	}
 
-	// split number into integer and fractional parts
-	intf, fracf := math.Modf(n + renderFloatPrecisionRounders[precision])
-
-	// generate integer part string
-	intStr := strconv.FormatFloat(intf, 'f', 0, 64)
-
-	// add thousand separator if required
 	if len(thousandStr) > 0 {
 		for i := len(intStr); i > 3; {
 			i -= 3
 			intStr = intStr[:i] + thousandStr + intStr[i:]
 		}
 	}
-
-	// no fractional part, we can leave now
 	if precision == 0 {
 		return signStr + intStr
 	}
-
-	// generate fractional part
-	fracStr := strconv.Itoa(int(fracf * renderFloatPrecisionMultipliers[precision]))
-	// may need padding
-	if len(fracStr) < precision {
-		fracStr = "000000000000000"[:precision-len(fracStr)] + fracStr
-	}
-
-	return signStr + intStr + decimalStr + fracStr
-}
-
-// FormatInteger produces a formatted number as string.
-// See FormatFloat.
-func FormatInteger(format string, n int) string {
-	return FormatFloat(format, float64(n))
+	return signStr + intStr + decimalStr + "000000000"[:precision]
 }
