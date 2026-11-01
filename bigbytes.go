@@ -173,7 +173,11 @@ func ParseBigBytes(s string) (*big.Int, error) {
 
 	num := s[:lastDigit]
 	if hasComma {
-		num = strings.Replace(num, ",", "", -1)
+		var gerr error
+		num, gerr = stripGroupingCommas(num)
+		if gerr != nil {
+			return nil, gerr
+		}
 	}
 
 	val := &big.Rat{}
