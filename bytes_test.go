@@ -215,3 +215,52 @@ func BenchmarkBytes(b *testing.B) {
 		Bytes(16.5 * GByte)
 	}
 }
+
+func TestParseBytesCommaGrouping(t *testing.T) {
+	tests := []struct {
+		name string
+		in   string
+		want uint64
+		ok   bool
+	}{
+		{"well formed", "1,000 MB", 1000000000, true},
+		{"well formed multiple", "1,000,000 B", 1000000, true},
+		{"well formed with fraction", "1,000.5 kB", 1000500, true},
+		// Malformed grouping used to be stripped silently, so "1,5 MB"
+		// returned the bytes of "15 MB".
+		{"comma as decimal", "1,5 MB", 0, false},
+		{"comma as decimal big", "16,5 GB", 0, false},
+		{"two digit group", "1,50 MB", 0, false},
+		{"leading group too long", "1234,567 B", 0, false},
+		{"leading comma", ",5 kB", 0, false},
+		{"comma before fraction", "1,.5 kB", 0, false},
+		{"comma in fraction", "1,0.5 kB", 0, false},
+	};
+	for _, tt := range tests {
+		got, err := ParseBytes(tt.in)
+		if tt.ok {
+			if err != nil {
+				t.Errorf("%s: ParseBytes(%q) returned error %v", tt.name, tt.in, err)
+				continue
+			}
+			if got != tt.want {
+				t.Errorf("%s: ParseBytes(%q) = %d, want %d", tt.name, tt.in, got, tt.want)
+			}
+			continue
+		}
+		if err == nil {
+			t.Errorf("%s: ParseBytes(%q) = %d, want error", tt.name, tt.in, got)
+		}
+	}
+}
+
+func TestParseBigBytesCommaGrouping(t *testing.T) {
+	if _, err := ParseBigBytes("1,000 MB"); err != nil {
+		t.Errorf("ParseBigBytes(%q) returned error %v", "1,000 MB", err)
+	}
+	for _, in := range []string{"1,5 MB", ",5 kB", "1,0.5 kB"} {
+		if _, err := ParseBigBytes(in); err == nil {
+			t.Errorf("ParseBigBytes(%q) succeeded, want error", in)
+		}
+	}
+}

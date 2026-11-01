@@ -160,6 +160,29 @@ func IBytesN(s uint64, n int) string {
 	return humanateBytes(s, 1024, n, sizes)
 }
 
+// stripGroupingCommas removes the comma thousands separators that Comma
+// produces, rejecting any grouping it could not have written: a first group
+// of one to three digits followed by groups of exactly three. Anything else
+// ("1,5", "1,50", ",5", "1234,567", a comma after the decimal point) is a
+// malformed number, and returning it stripped used to silently reinterpret
+// the digits: ParseBytes("1,5 MB") returned the bytes of "15 MB".
+func stripGroupingCommas(num string) (string, error) {
+	frac := ""
+	intPart := num
+	if i := strings.IndexByte(num, '.'); i >= 0 {
+		intPart, frac = num[:i], num[i:]
+		if strings.ContainsRune(frac, ',') {
+			return "", fmt.Errorf("invalid digit grouping: %v", num)
+		}
+	}
+	groups := strings.Split(intPart, ",")
+	for i, g := range groups {
+		if (i == 0 && len(g) > 3) || (i > 0 && len(g) != 3) {
+			return "", fmt.Errorf("invalid digit grouping: %v", num)
+		}
+	}
+	return strings.Join(groups, "") + frac, nil
+}
 // ParseBytes parses a string representation of bytes into the number
 // of bytes it represents.
 //
@@ -182,7 +205,11 @@ func ParseBytes(s string) (uint64, error) {
 
 	num := s[:lastDigit]
 	if hasComma {
-		num = strings.Replace(num, ",", "", -1)
+		var gerr error
+		num, gerr = stripGroupingCommas(num)
+		if gerr != nil {
+			return 0, gerr
+		}
 	}
 
 	f, err := strconv.ParseFloat(num, 64)
