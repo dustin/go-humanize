@@ -1,7 +1,6 @@
 package humanize
 
 import (
-	"bytes"
 	"math"
 	"math/big"
 	"strconv"
@@ -72,32 +71,32 @@ func Commaf(v float64) string {
 		return "-Inf"
 	}
 
-	buf := &bytes.Buffer{}
-	if v < 0 {
-		buf.Write([]byte{'-'})
+	neg := v < 0
+	if neg {
 		v = 0 - v
 	}
 
-	comma := []byte{','}
+	s := strconv.FormatFloat(v, 'f', -1, 64)
+	intPart, frac := s, ""
+	if dot := strings.IndexByte(s, '.'); dot >= 0 {
+		intPart, frac = s[:dot], s[dot:]
+	}
 
-	parts := strings.Split(strconv.FormatFloat(v, 'f', -1, 64), ".")
-	pos := 0
-	if len(parts[0])%3 != 0 {
-		pos += len(parts[0]) % 3
-		buf.WriteString(parts[0][:pos])
-		buf.Write(comma)
+	buf := make([]byte, 0, 1+len(intPart)+len(intPart)/3+len(frac))
+	if neg {
+		buf = append(buf, '-')
 	}
-	for ; pos < len(parts[0]); pos += 3 {
-		buf.WriteString(parts[0][pos : pos+3])
-		buf.Write(comma)
+	pos := len(intPart) % 3
+	if pos == 0 {
+		pos = 3
 	}
-	buf.Truncate(buf.Len() - 1)
-
-	if len(parts) > 1 {
-		buf.Write([]byte{'.'})
-		buf.WriteString(parts[1])
+	buf = append(buf, intPart[:pos]...)
+	for ; pos < len(intPart); pos += 3 {
+		buf = append(buf, ',')
+		buf = append(buf, intPart[pos:pos+3]...)
 	}
-	return buf.String()
+	buf = append(buf, frac...)
+	return string(buf)
 }
 
 // CommafWithDigits works like the Commaf but always formats the
