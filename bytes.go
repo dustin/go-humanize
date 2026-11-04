@@ -108,9 +108,11 @@ func humanateBytes(s uint64, base float64, minDigits int, sizes []string) string
 	}
 	suffix := sizes[int(e)]
 
-	ff := "%%.%df %%s"
-	f := fmt.Sprintf(ff, digits)
-	return fmt.Sprintf(f, val, suffix)
+	buf := make([]byte, 0, 24)
+	buf = strconv.AppendFloat(buf, val, 'f', digits, 64)
+	buf = append(buf, ' ')
+	buf = append(buf, suffix...)
+	return string(buf)
 }
 
 // Bytes produces a human-readable representation of an SI size.
