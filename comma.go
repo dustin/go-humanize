@@ -71,6 +71,12 @@ func Commaf(v float64) string {
 		return "-Inf"
 	}
 
+	return commaf(v)
+}
+
+// commaf formats a finite v. It is separate so that the special cases in Commaf
+// stay as cheap as they were before this function built its own buffer.
+func commaf(v float64) string {
 	neg := v < 0
 	if neg {
 		v = 0 - v
