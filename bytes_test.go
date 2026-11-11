@@ -200,6 +200,11 @@ func TestBytesPromoteRoundedUnits(t *testing.T) {
 		{"no fractional digits", BytesN(999500, 0), "1 MB"},
 		{"highest SI unit", Bytes(^uint64(0)), "18 EB"},
 		{"highest IEC unit", IBytes(^uint64(0)), "16 EiB"},
+		// 1.005 MB must round to 1.01 MB; float64(s)/1e6 falls just below the half.
+		{"exact half at 3 digits", BytesN(1005000, 3), "1.01 MB"},
+		{"exact half at 4 digits", BytesN(1005000, 4), "1.005 MB"},
+		// Integers above 2**53 are not all exact in float64.
+		{"large exact half", BytesN(1005000000000000000, 3), "1.01 EB"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
