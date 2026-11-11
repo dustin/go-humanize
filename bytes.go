@@ -3,6 +3,7 @@ package humanize
 import (
 	"fmt"
 	"math"
+	"math/big"
 	"math/bits"
 	"strconv"
 	"strings"
@@ -75,42 +76,90 @@ func countDigits(n int64) int {
 	return digits
 }
 
+// pow10u returns 10**n as a big.Int. n is required to be non-negative.
+func pow10u(n int) *big.Int {
+	return new(big.Int).Exp(big.NewInt(10), big.NewInt(int64(n)), nil)
+}
+
+// roundHalfUp returns round(s/unit, digits) * 10**digits as an integer,
+// using exact rational arithmetic so float64 rounding cannot drop a half.
+func roundHalfUp(s, unit uint64, digits int) *big.Int {
+	num := new(big.Int).SetUint64(s)
+	num.Mul(num, pow10u(digits))
+	den := new(big.Int).SetUint64(unit)
+	half := new(big.Int).Rsh(new(big.Int).Set(den), 1)
+	num.Add(num, half)
+	return num.Div(num, den)
+}
+
+// formatScaled renders q/10**digits with exactly `digits` decimal places.
+func formatScaled(q *big.Int, digits int) string {
+	s := q.String()
+	if digits == 0 {
+		return s
+	}
+	for len(s) <= digits {
+		s = "0" + s
+	}
+	return s[:len(s)-digits] + "." + s[len(s)-digits:]
+}
+
+func integerDigits(q *big.Int, digits int) int {
+	n := len(q.String()) - digits
+	if n < 1 {
+		return 1
+	}
+	return n
+}
+
 func humanateBytes(s uint64, base float64, minDigits int, sizes []string) string {
 	if s < 10 {
 		return fmt.Sprintf("%d B", s)
 	}
-	e := math.Floor(logn(float64(s), base))
-	val := float64(s) / math.Pow(base, e)
+	baseU := uint64(base)
 
-	// Determine how many decimal places to keep based on the unrounded
-	// value's integer-digit count, then round exactly once to that
-	// precision. Rounding first to a fixed precision and then again when
-	// formatting (double rounding) can flip the result at a boundary due
-	// to floating point error (see #103).
-	intDigits := countDigits(int64(val))
-	digits := max(minDigits-intDigits, 0)
-	rounding := math.Pow10(digits)
-	val = math.Floor(val*rounding+0.5) / rounding
-
-	// Rounding may have carried into an additional integer digit (e.g.
-	// 9.996 -> 10.0), which means fewer decimal places should be shown
-	// than originally computed.
-	if newIntDigits := countDigits(int64(val)); newIntDigits > intDigits {
-		digits = max(digits-(newIntDigits-intDigits), 0)
-	}
-
-	// A rounded value may now fit the next unit (1000 kB -> 1.0 MB).
-	// Recompute the precision for that unit without rounding the input again.
-	if val >= base && int(e)+1 < len(sizes) {
+	// Choose the unit with integer arithmetic so values above 2**53
+	// (where float64 cannot represent every integer) stay exact.
+	e := 0
+	unit := uint64(1)
+	for e+1 < len(sizes) {
+		if unit > ^uint64(0)/baseU {
+			break
+		}
+		next := unit * baseU
+		if s < next {
+			break
+		}
+		unit = next
 		e++
-		val /= base
-		digits = max(minDigits-countDigits(int64(val)), 0)
 	}
-	suffix := sizes[int(e)]
 
-	ff := "%%.%df %%s"
-	f := fmt.Sprintf(ff, digits)
-	return fmt.Sprintf(f, val, suffix)
+	for {
+		intDigits := countDigits(int64(s / unit))
+		if intDigits == 0 {
+			intDigits = 1
+		}
+		digits := max(minDigits-intDigits, 0)
+		q := roundHalfUp(s, unit, digits)
+		if newIntDigits := integerDigits(q, digits); newIntDigits > intDigits {
+			digits = max(digits-(newIntDigits-intDigits), 0)
+			q = roundHalfUp(s, unit, digits)
+		}
+		// Promote when rounding reaches the next unit (1000 kB -> 1.00 MB).
+		if e+1 < len(sizes) {
+			threshold := new(big.Int).SetUint64(baseU)
+			threshold.Mul(threshold, pow10u(digits))
+			if q.Cmp(threshold) >= 0 {
+				if unit > ^uint64(0)/baseU {
+					return fmt.Sprintf("%s %s", formatScaled(q, digits), sizes[e])
+				}
+				e++
+				unit *= baseU
+				continue
+			}
+		}
+		return fmt.Sprintf("%s %s", formatScaled(q, digits), sizes[e])
+	}
 }
 
 // Bytes produces a human-readable representation of an SI size.
