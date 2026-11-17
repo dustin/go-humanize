@@ -1,7 +1,10 @@
 package humanize
 
 import (
+	"errors"
 	"math"
+	"strconv"
+	"strings"
 	"testing"
 )
 
@@ -249,5 +252,19 @@ func TestComputeSINonFinite(t *testing.T) {
 		if got := SIWithDigits(test.in, 2, "x"); got != test.siwd {
 			t.Errorf("%s: SIWithDigits = %q, want %q", test.name, got, test.siwd)
 		}
+	}
+}
+
+func TestParseSIPrefixOverflow(t *testing.T) {
+	for _, sign := range []string{"", "-"} {
+		input := sign + "1" + strings.Repeat("0", 300) + " QB"
+		value, unit, err := ParseSI(input)
+		if !errors.Is(err, strconv.ErrRange) {
+			t.Errorf("ParseSI returned %g %s, %v; want range error", value, unit, err)
+		}
+	}
+	value, unit, err := ParseSI("1" + strings.Repeat("0", 270) + " QB")
+	if err != nil || math.IsInf(value, 0) || unit != "B" {
+		t.Fatalf("finite large input: %g %s, %v", value, unit, err)
 	}
 }

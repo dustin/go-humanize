@@ -170,5 +170,9 @@ func ParseSI(input string) (float64, string, error) {
 	unit := found[3]
 
 	base, err := strconv.ParseFloat(found[1], 64)
-	return base * mag, unit, err
+	value := base * mag
+	if err == nil && math.IsInf(value, 0) {
+		err = &strconv.NumError{Func: "ParseSI", Num: input, Err: strconv.ErrRange}
+	}
+	return value, unit, err
 }
