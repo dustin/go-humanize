@@ -198,6 +198,10 @@ func TestBytesPromoteRoundedUnits(t *testing.T) {
 		{"four digits at boundary", BytesN(999950, 4), "1.000 MB"},
 		{"IEC five digits", IBytesN(MiByte-1, 5), "1.0000 MiB"},
 		{"no fractional digits", BytesN(999500, 0), "1 MB"},
+		{"exact half rounds up", BytesN(1005000, 3), "1.01 MB"},
+		{"exact half rounds up 2", BytesN(1015000, 3), "1.02 MB"},
+		{"exact half rounds up 3", BytesN(1025000, 3), "1.03 MB"},
+		{"just below exact half", BytesN(1004999, 3), "1.00 MB"},
 		{"highest SI unit", Bytes(^uint64(0)), "18 EB"},
 		{"highest IEC unit", IBytes(^uint64(0)), "16 EiB"},
 	}

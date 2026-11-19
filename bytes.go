@@ -3,6 +3,7 @@ package humanize
 import (
 	"fmt"
 	"math"
+	"math/big"
 	"math/bits"
 	"strconv"
 	"strings"
@@ -75,42 +76,86 @@ func countDigits(n int64) int {
 	return digits
 }
 
+// ratFloor returns the greatest integer not greater than r. The values
+// handled here are non-negative and well within int64 range.
+func ratFloor(r *big.Rat) int64 {
+	return new(big.Int).Quo(r.Num(), r.Denom()).Int64()
+}
+
+// roundRat rounds r to the given number of decimal places, rounding
+// halves up, in exact arithmetic.
+func roundRat(r *big.Rat, digits int) *big.Rat {
+	scale := new(big.Int).Exp(big.NewInt(10), big.NewInt(int64(digits)), nil)
+	scaled := new(big.Rat).Mul(r, new(big.Rat).SetInt(scale))
+	scaled.Add(scaled, big.NewRat(1, 2))
+	n := new(big.Int).Quo(scaled.Num(), scaled.Denom())
+	return new(big.Rat).SetFrac(n, scale)
+}
+
+// formatRat renders a value previously rounded with roundRat at the
+// same number of decimal places.
+func formatRat(r *big.Rat, digits int) string {
+	scale := new(big.Int).Exp(big.NewInt(10), big.NewInt(int64(digits)), nil)
+	n := new(big.Int).Mul(r.Num(), scale)
+	n.Quo(n, r.Denom())
+	if digits == 0 {
+		return n.String()
+	}
+	intPart := new(big.Int).Quo(n, scale)
+	fracPart := new(big.Int).Mod(n, scale).String()
+	for len(fracPart) < digits {
+		fracPart = "0" + fracPart
+	}
+	return intPart.String() + "." + fracPart
+}
+
 func humanateBytes(s uint64, base float64, minDigits int, sizes []string) string {
 	if s < 10 {
 		return fmt.Sprintf("%d B", s)
 	}
-	e := math.Floor(logn(float64(s), base))
-	val := float64(s) / math.Pow(base, e)
+
+	// The scaling and rounding are done in exact rational arithmetic.
+	// Converting s to float64 loses precision on large inputs, and a
+	// scaled value that sits exactly on a rounding boundary (e.g.
+	// 1.005 MB) is stored slightly below it in binary floating point,
+	// so float arithmetic rounds it down instead of up (see #182).
+	// base is always an integral value (1000 or 1024).
+	ib := uint64(base)
+	pow := uint64(1)
+	e := 0
+	for e+1 < len(sizes) && pow <= s/ib {
+		pow *= ib
+		e++
+	}
+	val := new(big.Rat).SetFrac(new(big.Int).SetUint64(s), new(big.Int).SetUint64(pow))
 
 	// Determine how many decimal places to keep based on the unrounded
 	// value's integer-digit count, then round exactly once to that
 	// precision. Rounding first to a fixed precision and then again when
 	// formatting (double rounding) can flip the result at a boundary due
 	// to floating point error (see #103).
-	intDigits := countDigits(int64(val))
+	intDigits := countDigits(ratFloor(val))
 	digits := max(minDigits-intDigits, 0)
-	rounding := math.Pow10(digits)
-	val = math.Floor(val*rounding+0.5) / rounding
+	rounded := roundRat(val, digits)
 
 	// Rounding may have carried into an additional integer digit (e.g.
 	// 9.996 -> 10.0), which means fewer decimal places should be shown
 	// than originally computed.
-	if newIntDigits := countDigits(int64(val)); newIntDigits > intDigits {
+	if newIntDigits := countDigits(ratFloor(rounded)); newIntDigits > intDigits {
 		digits = max(digits-(newIntDigits-intDigits), 0)
+		rounded = roundRat(val, digits)
 	}
 
 	// A rounded value may now fit the next unit (1000 kB -> 1.0 MB).
 	// Recompute the precision for that unit without rounding the input again.
-	if val >= base && int(e)+1 < len(sizes) {
+	if rounded.Cmp(new(big.Rat).SetInt64(int64(ib))) >= 0 && e+1 < len(sizes) {
 		e++
-		val /= base
-		digits = max(minDigits-countDigits(int64(val)), 0)
+		val = new(big.Rat).Quo(rounded, new(big.Rat).SetInt64(int64(ib)))
+		digits = max(minDigits-countDigits(ratFloor(val)), 0)
+		rounded = roundRat(val, digits)
 	}
-	suffix := sizes[int(e)]
 
-	ff := "%%.%df %%s"
-	f := fmt.Sprintf(ff, digits)
-	return fmt.Sprintf(f, val, suffix)
+	return fmt.Sprintf("%s %s", formatRat(rounded, digits), sizes[e])
 }
 
 // Bytes produces a human-readable representation of an SI size.
