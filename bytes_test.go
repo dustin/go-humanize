@@ -1,6 +1,8 @@
 package humanize
 
 import (
+	"fmt"
+	"math/rand"
 	"testing"
 )
 
@@ -198,6 +200,10 @@ func TestBytesPromoteRoundedUnits(t *testing.T) {
 		{"four digits at boundary", BytesN(999950, 4), "1.000 MB"},
 		{"IEC five digits", IBytesN(MiByte-1, 5), "1.0000 MiB"},
 		{"no fractional digits", BytesN(999500, 0), "1 MB"},
+		{"exact half rounds up", BytesN(1005000, 3), "1.01 MB"},
+		{"exact half rounds up 2", BytesN(1015000, 3), "1.02 MB"},
+		{"exact half rounds up 3", BytesN(1025000, 3), "1.03 MB"},
+		{"just below exact half", BytesN(1004999, 3), "1.00 MB"},
 		{"highest SI unit", Bytes(^uint64(0)), "18 EB"},
 		{"highest IEC unit", IBytes(^uint64(0)), "16 EiB"},
 	}
@@ -214,4 +220,73 @@ func BenchmarkBytes(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		Bytes(16.5 * GByte)
 	}
+}
+
+// BenchmarkBytesVarying exercises Bytes with a different value on
+// every iteration, so the rounding work cannot be shared across calls.
+func BenchmarkBytesVarying(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Bytes(uint64(i)*7919 + 82854982)
+	}
+}
+
+// refHumanate formats through the big.Rat fallback with the same unit
+// selection as humanateBytes, so the 128-bit path can be checked
+// against exact rational arithmetic.
+func refHumanate(s uint64, n int, base float64, sizes []string) string {
+	if s < 10 {
+		return fmt.Sprintf("%d B", s)
+	}
+	ib := uint64(base)
+	pow := uint64(1)
+	e := 0
+	for e+1 < len(sizes) && pow <= s/ib {
+		pow *= ib
+		e++
+	}
+	return humanateBytesRat(s, ib, pow, e, n, sizes)
+}
+
+// TestScaledPathMatchesRatFallback checks that the 128-bit integer
+// rounding path produces exactly the same output as the big.Rat
+// fallback across small values, unit boundaries, random values and
+// the largest uint64, for every digit count the fast path supports.
+func TestScaledPathMatchesRatFallback(t *testing.T) {
+	si := []string{"B", "kB", "MB", "GB", "TB", "PB", "EB"}
+	iec := []string{"B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"}
+	boundaries := []uint64{
+		1000, 1000 * 1000, 1000 * 1000 * 1000, 1000 * 1000 * 1000 * 1000,
+		1000 * 1000 * 1000 * 1000 * 1000, 1000 * 1000 * 1000 * 1000 * 1000 * 1000,
+		1024, 1024 * 1024, 1024 * 1024 * 1024, 1024 * 1024 * 1024 * 1024,
+		1024 * 1024 * 1024 * 1024 * 1024, 1024 * 1024 * 1024 * 1024 * 1024 * 1024,
+	}
+
+	vals := make([]uint64, 0, 40000)
+	for v := uint64(0); v <= 20000; v++ {
+		vals = append(vals, v)
+	}
+	for _, bnd := range boundaries {
+		for d := int64(-500); d <= 500; d++ {
+			vals = append(vals, uint64(int64(bnd)+d))
+		}
+	}
+	rng := rand.New(rand.NewSource(1))
+	for i := 0; i < 2000; i++ {
+		vals = append(vals, rng.Uint64())
+	}
+	vals = append(vals, ^uint64(0), ^uint64(0)-1, ^uint64(0)-999999)
+
+	checked := 0
+	for _, v := range vals {
+		for n := 1; n <= 7; n++ {
+			if got, want := BytesN(v, n), refHumanate(v, n, 1000, si); got != want {
+				t.Fatalf("BytesN(%d, %d): got %q, want %q", v, n, got, want)
+			}
+			if got, want := IBytesN(v, n), refHumanate(v, n, 1024, iec); got != want {
+				t.Fatalf("IBytesN(%d, %d): got %q, want %q", v, n, got, want)
+			}
+			checked += 2
+		}
+	}
+	t.Logf("checked %d (value, n) pairs, all match", checked)
 }
